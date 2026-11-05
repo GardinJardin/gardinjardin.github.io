@@ -5,3 +5,5 @@ images.jpeg
 __pycache__/
 notes/.trash/
 .DS_Store
+
+CLAUDE.md
