@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aaryan Jain</title>
+<!-- VT323: the retro TV on-screen-display font, same as the ERCOT headroom app's headings -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech&display=swap">
+<!-- Share Tech: the concept tracker's font, used in the add-note popup (copied from that app) -->
+<!-- KaTeX: draws LaTeX math inside notes ($$...$$ on its own line, \( ... \) inside a sentence) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+  /* PAGE COLORS: every color on the page lives here, named by what it paints (e.g. --heading-text,
+     --button-background). Never type a raw color code below this block; use var(--name). */
+  :root {
+    --page-background: #253547;              /* shows only for the instant before the bubble squares draw */
+
+    /* Bubbling background: a grid of squares, each one jumping between shades on its own random timer.
+       The shades are evenly spaced from darkest to brightest. bubbles.js reads these values. */
+    --bubble-darkest: #0c2d4f;
+    --bubble-brightest: #177feb;
+    --bubble-shades: 10;                     /* how many shades between (and including) the two ends */
+    --bubble-size: 28px;                     /* side of one square (about a pinky fingertip) */
+    --note-letter-width: var(--bubble-size); /* how wide one letter is in a text box on the page (pinky width = the square); smaller number = smaller words */
+    --bubble-min-wait: 2000;                 /* shortest time a square holds a shade after bubbling, in milliseconds */
+    --bubble-max-wait: 2000;                 /* longest hold (same as shortest = every square waits exactly 2 s) */
+    /* Stutter: when a square changes shade it flickers old/new/old/new... a few times before it settles. */
+    --bubble-min-flickers: 2;                /* fewest flickers per change (0 = clean switch, no stutter) */
+    --bubble-max-flickers: 6;                /* most flickers per change */
+    --bubble-flicker-min: 40;                /* shortest single flicker, in milliseconds */
+    --bubble-flicker-max: 140;               /* longest single flicker, in milliseconds */
+
+    --image-outline: #39ff14;                /* green outline around every picture in a note */
+    --lightbox-caption: #f4f1ea;             /* a picture's caption in its popup */
+    --image-glow: rgba(57, 255, 20, 0.55);   /* neon green halo around the portal; last number = strength (0 to 1) */
+    --pop-seconds: 0.22s;                    /* how long each part takes to pop onto the screen after the zoom */
+    --portal-gap: 2.5vh;                     /* landing page: space between the title box and the portal, and under the portal */
+    --zoom-seconds: 5;                       /* clicking the portal: how long it takes to grow until it fills the screen */
+    --portal-spin-seconds: 18;               /* one full turn of the pixel portal takes this long (0 = still) */
+    /* Splotches: short gold or white chains on the portal. Each one grows pixel by pixel along the ring,
+       rides round with the spin, then vanishes pixel by pixel in reverse. portal-pixels.js reads these. */
+    --splotch-gold: #bcd244;                 /* gold #F8E50E mixed toward the portal's lightest green #a8cb55 twice (75% green) */
+    --splotch-white: #bbd77c;                /* white #F4FAEE mixed toward the portal's lightest green #a8cb55 twice (75% green) */
+    --splotch-max: 6;                        /* most splotches on the portal at once */
+    --splotch-per-second: 1.5;               /* how often new ones start, on average */
+    --splotch-min-length: 1;                 /* shortest chain, in pixels */
+    --splotch-max-length: 3;                 /* longest chain, in pixels */
+    --splotch-step-ms: 150;                  /* time between one pixel appearing (or vanishing) and the next */
+    --splotch-min-ride: 2;                   /* shortest time a full chain rides the spin, in seconds */
+    --splotch-max-ride: 6;                   /* longest ride, in seconds */
+    --title-text: #39ff14;                   /* "Click on the portal to initialize" */
+    --title-glow: rgba(57, 255, 20, 0.6);    /* soft halo behind the title letters */
+    --title-box-background: #1d2630;         /* fill of the box the title sits in */
+    --title-box-outline: #39ff14;            /* the box's neon border line */
+    --title-box-glow: rgba(57, 255, 20, 0.55); /* glow around the box's border, outside and inside */
+
+    /* After the portal click: the boxes inside the portal */
+    --text-box-background: #1d2630;          /* gray-green fill of every text box */
+    --text-box-outline: #39ff14;             /* neon line drawn just inside each box's edge */
+    --text-box-glow: rgba(57, 255, 20, 0.6); /* glow around that neon line */
+    --text-box-text: #39ff14;                /* the words inside the boxes */
+    --more-dots-text: var(--text-box-text);  /* the "..." at the end of a text box that holds more than it shows */
+    --more-dots-inset: 22px;                 /* how far the "..." sits from the box's right edge */
+    --text-box-link: #e8d92e;                /* links inside the boxes */
+    --note-time-text: #c77dff;               /* "Nov 4, 2:47 PM" beside each note box: neon violet, like the social icons */
+    --note-time-glow: rgba(176, 38, 255, 0.85); /* its glow */
+    --note-time-background: rgba(60, 60, 66, 0.55); /* soft gray patch behind it so it reads on any background */
+    --pin-icon: #ffc72c;                     /* pushpin in an opened note (owner only): gold, filled when pinned */
+    --pin-glow: rgba(255, 199, 44, 0.85);
+    --trash-icon: #73ffb4;                   /* trash can beside each note (owner only): the concept tracker's mint */
+    --trash-glow: rgba(115, 255, 180, 0.9);  /* its glow */
+    --note-quote-line: rgba(15, 26, 36, 0.45); /* quote bars, rules and table lines inside a note */
+    --note-code-background: rgba(15, 26, 36, 0.12); /* behind code inside a note */
+    --divider-line: #ffffff;                 /* thin lines: under the four boxes, and splitting the bottom area */
+    --icon-color: #b026ff;                   /* neon violet social icons */
+    --icon-glow: rgba(176, 38, 255, 0.75);   /* glow around the icons */
+    /* Add-note popup (plus button): same layout as the concept tracker's "New Concept" popup, site colors */
+    --popup-dim: rgba(0, 0, 0, 0.65);        /* darkens the page behind the popup */
+    --popup-background: #1d2630;             /* the popup's fill (same dark slate as the landing title box) */
+    --popup-border: rgba(57, 255, 20, 0.7);  /* thin edge line */
+    --popup-glow: rgba(57, 255, 20, 0.3);    /* neon green glow around the popup */
+    --popup-text: #f2f6ff;                   /* main text */
+    --popup-text-muted: rgba(232, 240, 255, 0.62); /* labels, close button */
+    --popup-field-background: rgba(0, 0, 0, 0.35); /* inside the title, body and tag fields */
+    --popup-field-border: rgba(232, 240, 255, 0.18);
+    --popup-accent: #39ff14;                 /* field outline while typing, the Save button */
+    --popup-accent-text: #0f1a24;            /* words on the Save button */
+    --popup-tag: #9BB497;                    /* tag chips (same gray-green as the boxes) */
+    --popup-error: #fae605;
+    --arrange-ribbon: #f4f1ea;               /* the dashed "arrange" strip under an open note's title (owner only) */
+    --arrange-ribbon-hover: rgba(244, 241, 234, 0.12);
+    --arrange-frame: rgba(0, 0, 0, 0.35);    /* the frame inside the arrange popup */
+    --arrange-shape: rgba(155, 180, 151, 0.55); /* a part (text / picture) as a shape */
+    --arrange-shape-title: rgba(57, 255, 20, 0.35); /* the title shape */
+    --arrange-shape-image: rgba(57, 255, 20, 0.12); /* a picture shape (just a box, green edge) */
+    --arrange-shape-list: rgba(176, 38, 255, 0.25); /* a box page's notes list / pinned list shapes */
+    --arrange-shape-edge: rgba(244, 241, 234, 0.8);
+    --arrange-fold: rgba(250, 230, 5, 0.85);  /* dashed line: what fits on screen without scrolling */                  /* "please fill in a title" message */
+    --bio-text: #ffc72c;                     /* your bio's words: gold */
+    --bio-text-shadow: rgba(40, 30, 0, 0.55); /* faint dark edge so gold reads on the gray-green box */
+    --menu-button-edge: #f4f1ea;             /* milky white ring around the round buttons, bottom right */
+    --menu-button-icon: #f4f1ea;             /* milky white icons inside them */
+    --menu-button-gray: 0.5;                 /* how gray the pixels inside the buttons turn (0 = full color, 1 = fully gray) */
+    --menu-button-shadow: rgba(0, 0, 0, 0.35); /* soft shadow under the buttons */
+    --gun-glow: rgba(57, 255, 20, 0.9);      /* neon green halo around the small guns (stronger than the portal's) */
+    --gun-beam: #fae605;                     /* thin line from each gun's barrel to its box */
+    --gun-beam-glow: rgba(250, 230, 5, 0.7); /* glow around that line */
+
+    /* layout editor only (shows on your own computer, never on the live site) */
+    --editor-outline: rgba(255, 255, 255, 0.8);   /* dashed box around a draggable item */
+    --editor-handle: #ffffff;                       /* the resize square in each box's corner */
+    --editor-button-background: #10131a;
+    --editor-button-text: #ffffff;
+  }
+
+  /* Background color sits on html only: a body background would paint over the bubble canvas. */
+  html { min-height: 100%; background: var(--page-background); }
+  body { margin: 0; min-height: 100%; }
+  #bubbles { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; }
+
+  /* Scene: one screen tall. Each item's position and size live in layout.css,
+     which the drag-and-resize editor writes for you. */
+  .scene { position: relative; height: 100vh; overflow: hidden; }
+  .movable { position: absolute; }
+  .movable img { display: block; width: 100%; height: auto; }
+
+  /* Title: the box is a "container", so the letters scale with the box's width (cqw = 1% of the box).
+     Resize the box in the editor and the text grows or shrinks with it. */
+  #title { container-type: inline-size; }
+  .title {
+    margin: 0; text-align: center; font: 400 5.5cqw/1.1 "VT323", monospace;
+    color: var(--title-text); text-shadow: 0 0 12px var(--title-glow);
+    /* the box: dark fill, neon border, glow both outside and inside the border */
+    box-sizing: border-box; padding: 2.5cqw 3cqw; border-radius: 6px;
+    background: var(--title-box-background);
+    border: 2px solid var(--title-box-outline);
+    box-shadow: 0 0 14px var(--title-box-glow), inset 0 0 10px var(--title-box-glow);
+  }
+
+  /* Portal: drawn as pixel art by portal-pixels.js. The hidden <img> only sets the box's size (and is the
+     picture the pixels are sampled from); the canvas on top shows the pixels, one per background square,
+     lined up with the background grid. The spin happens inside the sampling, so the pixels stay square. */
+  #portal img { visibility: hidden; }
+  /* The portal always fits the screen: it starts just under the title box and is as wide as layout.css says
+     (72.2% of the width) unless the screen is too short for that, then it shrinks to fit the height, and it
+     stays centered. 0.1105 = the title box's height as a share of its width; 286/297 = the portal picture's
+     width/height. (These override layout.css, so dragging the portal in the layout editor no longer changes it.) */
+  .scene #portal {
+    --portal-top: max(20.3vh, calc(4.2vh + 85.8vw * 0.1105 + 4px + var(--portal-gap)));
+    --portal-width: min(72.2vw, calc((100vh - var(--portal-top) - var(--portal-gap)) * 286 / 297));
+    top: var(--portal-top); width: var(--portal-width); left: calc(50vw - var(--portal-width) / 2);
+  }
+  .portal-pixels {
+    position: absolute; image-rendering: pixelated; cursor: pointer;
+    filter: drop-shadow(0 0 6px var(--image-glow)) drop-shadow(0 0 18px var(--image-glow));
+  }
+  .editing .portal-pixels { pointer-events: none; }
+  #portal { z-index: 1; }   /* while zooming, the portal grows over everything, the title included */
+  #title { transition: opacity 1s; }
+  .portal-entered #title { opacity: 0; }   /* the title fades out once the portal is clicked */
+
+  /* ---- After the click: the page inside the portal ----
+     Hidden until the zoom finishes, then fades in. Boxes stack top to bottom in one centered column. */
+  .inside {
+    position: fixed; inset: 0; z-index: 2; box-sizing: border-box;
+    display: flex; flex-direction: column; gap: 14px;
+    width: min(1100px, 100% - 32px); margin: 0 auto; padding: 20px 0;
+    opacity: 0; visibility: hidden; transition: opacity 1.2s;
+    font-family: "VT323", monospace; color: var(--text-box-text);
+  }
+  .portal-arrived .inside, .portal-arrived .menu { opacity: 1; visibility: visible; transition: none; }   /* no fade: the parts pop in instead (pop-in.js) */
+  /* Pop-in after the zoom: each part waits hidden, then pops: overshoots a little, settles at full size */
+  .pop-wait { opacity: 0 !important; }
+  .pop { animation: pop-in var(--pop-seconds) cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+  @keyframes pop-in { from { opacity: 0; transform: scale(0.4); } 60% { opacity: 1; } to { opacity: 1; transform: scale(1); } }
+
+  /* A text box: gray-green fill, with the neon line drawn a few pixels INSIDE the edge,
+     so the gray shows a smidge beyond the line. The line + its glow is a separate layer (::before). */
+  .text-box {
+    position: relative; background: var(--text-box-background); border-radius: 14px;
+    padding: 16px 22px; margin: 0;
+  }
+  .text-box::before {
+    content: ""; position: absolute; inset: 4px; border-radius: 10px; pointer-events: none;
+    border: 2px solid var(--text-box-outline);
+    box-shadow: 0 0 8px var(--text-box-glow), inset 0 0 6px var(--text-box-glow);
+  }
+  .text-box a { color: var(--text-box-link); }
+
+  /* Row of icons, top right, above the title box. No background: the "invisible ribbon". */
+  .icon-ribbon { display: flex; justify-content: flex-end; gap: 16px; }
+  .icon-ribbon svg {
+    width: 30px; height: 30px; fill: var(--icon-color);
+    filter: drop-shadow(0 0 4px var(--icon-glow)) drop-shadow(0 0 10px var(--icon-glow));
+    transition: transform 0.15s ease-out;
+  }
+  .social-link { display: block; line-height: 0; border-radius: 6px; }
+  .social-link:hover svg, .social-link:focus-visible svg { transform: scale(1.18); }   /* hover: the icon grows a little */
+  .social-link:focus-visible { outline: 2px dashed var(--icon-color); outline-offset: 4px; }
+
+  .inside { --name-size: clamp(2.2rem, 6vw, 4.2rem); }   /* title text size, shared with the empty ribbon below */
+  .name-box { font-size: var(--name-size); line-height: 1; margin: 0; font-weight: 400; }
+  /* Ribbon between the links box and the split: full column width, as tall as the title box
+     (title text + 32px padding). Holds 4 boxes spread evenly across it. */
+  .ribbon-slot {
+    flex: none; height: calc(var(--name-size) + 32px);
+    display: flex; justify-content: space-between; gap: 16px;
+  }
+  /* Each box is exactly as wide as its word plus the SAME side padding (0.6 of the letter height) on
+     every box, so the gap between word and box edge is identical on both sides of all four boxes.
+     The boxes therefore differ in width; the ribbon spreads them out with equal gaps between.
+     Text size: 42% of the ribbon's height, but never so big that the four words + padding overflow the
+     column (the four labels add up to 12 letter-heights of text in VT323, measured; + 8 x 0.6 of padding = 16.8). */
+  .ribbon-slot .text-box {
+    flex: none; box-sizing: border-box; height: 100%; padding: 0 0.6em; white-space: nowrap;
+    display: flex; align-items: center;
+    font-size: min(calc((var(--name-size) + 32px) * 0.42), calc((min(1100px, 100vw - 32px) - 48px) / 16.8));
+    line-height: 1;
+  }
+  /* full width, fills the rest of the screen below the ribbon. The box stays still and only the text inside
+     scrolls (if the box scrolled, its neon line would slide through the words). */
+  .bio-box { font-size: 1.4rem; flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Bottom area: fills the rest of the screen, split 2/3 | 1/3 by a thin white line (a real line, not squares) */
+  .split { flex: 1; min-height: 0; display: grid; grid-template-columns: 2fr 1px 1fr; gap: 0 20px; }
+  .split .divider { background: var(--divider-line); }
+  .divider-horizontal { flex: none; height: 1px; background: var(--divider-line); }   /* same line as the split's, lying flat */
+  /* Each side stacks its own boxes, top to bottom. Scrolls inside itself if it ever overflows. */
+  .split-left, .split-right { display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow-y: auto; padding: 10px 20px; }   /* padding keeps the glows from being cut off at the edges */
+  .placeholder { font-size: 1.3rem; }
+  /* Left side: each box has a small portal gun outside its LEFT edge, pulled halfway toward the screen's
+     left edge, with a thin glowing beam from the barrel tip to the box.
+     --gun-pull = half the distance the gun used to sit from the screen's left edge
+     (column offset from the screen edge + the column's 20px padding). */
+  .split-left { --gun-width: clamp(40px, 5vw, 75px); --gun-pull: calc((max(16px, (100vw - 1100px) / 2) + 20px) / 2);
+                --beam-scale: 0.667;   /* beam length vs the original (1 = original, 0.667 = two thirds); shorter beam = wider boxes */
+                --beam-length: calc((0.193 * var(--gun-width) + var(--gun-pull) + 12px) * var(--beam-scale));
+                overflow: visible; }   /* visible: a scroll area would cut off the pulled-out guns */
+  .box-row { display: flex; align-items: center; }
+  .box-row .text-box { flex: 1; }
+  .gun-wrap {
+    position: relative; flex: none; width: var(--gun-width);
+    margin-left: calc(-1 * var(--gun-pull));
+    margin-right: calc(var(--beam-length) - 0.193 * var(--gun-width));   /* gap to the box = beam minus the part over the gun's picture */
+  }
+  .row-gun {
+    display: block; width: 100%; height: auto;
+    /* three stacked glows (tight, medium, wide) so even a small gun reads as lit up */
+    filter: drop-shadow(0 0 3px var(--gun-glow)) drop-shadow(0 0 9px var(--gun-glow)) drop-shadow(0 0 20px var(--gun-glow));
+  }
+  /* Beam: starts at the barrel tip (80.7% across, 53.7% down the gun picture, measured from portal-gun.png)
+     and runs right until it touches the box. */
+  .beam {
+    position: absolute; left: 80.7%; top: 53.7%; height: 2px; transform: translateY(-50%);
+    width: var(--beam-length);
+    background: var(--gun-beam); box-shadow: 0 0 6px var(--gun-beam-glow), 0 0 12px var(--gun-beam-glow);
+  }
+
+  /* ---- Round menu button, bottom right (inside page only) ----
+     Click the list button: the message and plus buttons slide out to its left.
+     The plus button only exists for the owner (page opened on localhost, see the script at the bottom). */
+  .menu {
+    position: fixed; right: 20px; bottom: 20px; z-index: 3;
+    display: flex; flex-direction: row-reverse; align-items: center; gap: 12px;
+    opacity: 0; visibility: hidden; transition: opacity 1.2s;
+  }
+  .portal-arrived .menu { opacity: 1; visibility: visible; }
+  /* Each button is see-through: you see the pixel background behind it, turned gray
+     (backdrop-filter drains color from whatever is underneath, by --menu-button-gray), inside a milky white ring. */
+  .menu button {
+    width: 54px; height: 54px; border-radius: 50%; padding: 0; cursor: pointer;
+    display: grid; place-items: center;
+    background: transparent; border: 2.5px solid var(--menu-button-edge);
+    -webkit-backdrop-filter: grayscale(var(--menu-button-gray)); backdrop-filter: grayscale(var(--menu-button-gray));
+    box-shadow: 0 3px 12px var(--menu-button-shadow);
+  }
+  .menu button svg { width: 30px; height: 30px; stroke: var(--menu-button-icon); fill: none;
+                     stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .menu button svg .dot { fill: var(--menu-button-icon); stroke: none; }   /* filled shapes: the list dots, the message bubble */
+  /* the two extra buttons: tucked behind the list button until it's clicked */
+  .menu .menu-extra { width: 46px; height: 46px; opacity: 0; transform: translateX(40px) scale(0.6); pointer-events: none;
+                      transition: opacity 0.25s, transform 0.25s; }
+  /* opens on hover (mouse); a tap also opens it on phones, which have no hover */
+  .menu:hover .menu-extra, .menu.open .menu-extra { opacity: 1; transform: none; pointer-events: auto; }
+  .menu:hover .menu-extra:nth-of-type(3), .menu.open .menu-extra:nth-of-type(3) { transition-delay: 0.05s; }   /* the farther one arrives a beat later */
+  .menu-plus { display: none !important; }
+  .owner .menu-plus { display: grid !important; }
+
+  /* ---- Clickable boxes: the title and the four ribbon boxes ----
+     Hover (or keyboard focus) grows a box slightly. Clicking a ribbon box swaps the Bio for the split layout;
+     clicking the title swaps back to the Bio. The page only shows one of the two at a time. */
+  .clickable { cursor: pointer; transition: transform 0.15s ease-out; -webkit-user-select: none; user-select: none; }
+  .section-tab:hover, .section-tab:focus-visible { transform: scale(1.08); }
+  .name-box:hover, .name-box:focus-visible { transform: scale(1.025); }   /* the title is wide, so it grows less */
+  .clickable:focus-visible { outline: none; }
+  .inside .split { display: none; }
+  .inside.show-split .split { display: grid; }
+  .inside.show-split .bio-box { display: none; }
+  /* Note view: clicking a note box (an item in the split) puts that note in the split's place */
+  .inside .note-view { display: none; }
+  .inside.show-note .note-view { display: flex; flex-direction: column; gap: 14px; flex: 1; min-height: 0; }
+  .note-view .note-title { flex: none; }
+  .inside.show-note .bio-box { display: none; }
+  .note-title { font-size: 2rem; font-weight: 400; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  /* Note body: formatting as pasted from Substack (links, headings, lists, quotes, code, images, tables) */
+  .note-body { font-size: 1.35rem; line-height: 1.45; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .note-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  .reader-modal .note-content { padding-right: 36px; }   /* room for the popup's close icon */
+  /* Text boxes on the page (not opened): one fixed, large letter size. Each letter is about as wide as
+     --note-letter-width (VT323 letters are ~0.4 of the font size wide, measured). Long lines wrap and
+     the box scrolls; the words are never shrunk to fit. */
+  .note-block .note-content { font-size: calc(var(--note-letter-width) / 0.4); line-height: 1.15; overflow: hidden; }   /* no scrolling in boxes on the page: "..." shows there's more, click to read it all */
+  .note-block .note-body { position: relative; }
+  .more-dots {
+    display: none; position: absolute; right: var(--more-dots-inset); pointer-events: none;
+    font-size: calc(var(--note-letter-width) / 0.4); line-height: 1.15; color: var(--more-dots-text);
+    padding-left: 1.6em; background: linear-gradient(to right, transparent, var(--text-box-background) 1.2em);   /* fades out the words under the dots */
+  }
+  .has-more .more-dots { display: block; }
+  /* headings in those boxes: a gentler step up, since the words are already big */
+  .note-block .note-content h1 { font-size: 1.4em; } .note-block .note-content h2 { font-size: 1.25em; }
+  .note-block .note-content h3 { font-size: 1.12em; } .note-block .note-content h4,
+  .note-block .note-content h5, .note-block .note-content h6 { font-size: 1em; }
+  .opens-reader, .opens-reader * { cursor: pointer !important; }   /* the hand: everything inside the box, words included */
+  .opens-reader:focus-visible { outline: 2px dashed var(--text-box-outline); outline-offset: 3px; }   /* the scrolling layer; the box and its neon line stay put. Right padding: room for the full-screen button */
+  /* Full-screen button, top right of the body box (everyone) */
+  .note-fullscreen {
+    position: absolute; top: 12px; right: 12px; z-index: 1; width: 30px; height: 30px; padding: 4px;
+    border: none; border-radius: 6px; background: transparent; color: var(--text-box-text); cursor: pointer; opacity: 0.75;
+  }
+  .note-fullscreen:hover { opacity: 1; background: var(--note-code-background); }
+  .note-fullscreen svg { width: 100%; height: 100%; display: block; }
+  /* Reading popup (full-screen button): title + body, centered over a dimmed page; click outside to close */
+  .reader-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100; padding: 24px; box-sizing: border-box;
+    align-items: center; justify-content: center; background: var(--popup-dim);
+    font-family: "VT323", monospace; color: var(--text-box-text);
+  }
+  .reader-overlay.open { display: flex; }
+  .reader-modal { width: min(900px, 100%); max-height: 100%; display: flex; flex-direction: column; gap: 14px; }
+  .reader-modal .note-title { flex: none; margin: 0; }
+  .reader-modal .note-body { flex: 0 1 auto; font-size: 1.5rem; }   /* grows with the text, scrolls inside once it's taller than the screen */
+  /* Owner tag row under an opened note (local only) */
+  .note-tags { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 18px; font-size: 1.1rem; }
+  .note-tags-label { opacity: 0.7; }
+  .note-tags-chips { display: contents; }
+  .note-tags-input {
+    flex: 1; min-width: 140px; font: inherit; padding: 2px 8px; border-radius: 8px;
+    border: 1px solid var(--note-quote-line); background: var(--note-code-background); color: var(--text-box-text);
+  }
+  .note-tags-input:focus { outline: none; border-color: var(--text-box-text); }
+  .note-content > :first-child { margin-top: 0; }
+  .note-content > :last-child { margin-bottom: 0; }
+  .note-body h1, .note-body h2, .note-body h3, .note-body h4, .note-body h5, .note-body h6 { font-weight: 400; line-height: 1.1; margin: 1em 0 0.4em; }
+  .note-body h1 { font-size: 2.2em; } .note-body h2 { font-size: 1.8em; } .note-body h3 { font-size: 1.5em; }
+  .note-body h4 { font-size: 1.25em; } .note-body h5, .note-body h6 { font-size: 1.1em; }
+  .note-body p { margin: 0 0 0.8em; }
+  .note-body a { color: var(--text-box-link); text-decoration: underline; }
+  .note-body ul, .note-body ol { margin: 0 0 0.8em; padding-left: 1.4em; }
+  .note-body blockquote { margin: 0 0 0.8em; padding: 0.2em 0 0.2em 0.9em; border-left: 3px solid var(--note-quote-line); }
+  .note-body pre { margin: 0 0 0.8em; padding: 0.7em 0.9em; border-radius: 8px; overflow-x: auto; background: var(--note-code-background); }
+  .note-body code { font-family: ui-monospace, Menlo, monospace; font-size: 0.8em; }
+  .note-body :not(pre) > code { padding: 0.05em 0.3em; border-radius: 4px; background: var(--note-code-background); }
+  .note-body hr { border: 0; border-top: 1px solid var(--note-quote-line); margin: 1.2em 0; }
+  .note-body img { max-width: 100%; height: auto; border-radius: 6px; }
+  .note-body figure { margin: 0 0 0.8em; }
+  .note-body figcaption { font-size: 0.85em; opacity: 0.8; }
+  .note-body table { border-collapse: collapse; margin: 0 0 0.8em; }
+  .note-body th, .note-body td { border: 1px solid var(--note-quote-line); padding: 0.25em 0.6em; }
+  .note-body mark { background: var(--bio-text); }
+  /* Owner editing an opened note in place (like the Bio): no outline, a text cursor, a hint when empty */
+  .owner .editable { cursor: text; outline: none; }
+  .owner .editable .equation-locked { cursor: pointer; }   /* click an equation to edit its LaTeX */
+  .owner .editable .equation-locked:hover { background: var(--note-code-background); border-radius: 4px; }
+  .note-content.editable:empty::before { content: attr(data-placeholder); opacity: 0.5; }
+  .note-body .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2em 0; }   /* wide equations are shrunk to fit by content.js (fitEquations); sideways scroll is only a safety net */
+  .np-editor h1, .np-editor h2, .np-editor h3 { margin: 0.4em 0; } .np-editor img { max-width: 100%; height: auto; }
+  .np-editor a { color: var(--popup-accent); }
+  .note-title .note-pin { width: 34px; height: 34px; margin-left: 0; }   /* pin sits at the title box's right end */
+
+  /* ---- Owner tools (localhost only) and note boxes ---- */
+  /* The old plain Bio box is replaced by the Bio note (notes/about/bio/), drawn like any note */
+  .inside .bio-box { display: none !important; }
+  .note-view.is-bio .note-content { color: var(--bio-text); text-shadow: 0 1px 2px var(--bio-text-shadow); }   /* bio words stay gold */
+  .note-view.is-bio .note-title { -webkit-user-select: none; user-select: none; }
+  .bio-label { -webkit-user-select: none; user-select: none; }   /* the heading: fixed, can't be edited or selected */
+  .bio-text {
+    flex: 1 1 auto; min-height: 0; overflow-y: auto;   /* scrolls inside the still box when the bio gets long */
+    margin-top: 6px; min-height: 1.2em; white-space: pre-wrap; overflow-wrap: break-word;
+    color: var(--bio-text); text-shadow: 0 1px 2px var(--bio-text-shadow);
+  }
+  .owner .bio-box { cursor: text; }   /* click anywhere in the box to type */
+  .owner .bio-text:focus { outline: none; }
+  .split-left .text-box.item, .split-right .text-box.item { cursor: pointer; font-size: 1.4rem; transition: transform 0.15s ease-out; }
+  .split-left .text-box.item:hover, .split-right .text-box.item:hover { transform: scale(1.03); }
+  .note-time {   /* when the note was added: right end of the row, just left of the white line */
+    flex: none; margin-left: 14px; white-space: nowrap; font-size: 1.15rem;
+    padding: 2px 10px; border-radius: 8px; background: var(--note-time-background);
+    color: var(--note-time-text); text-shadow: 0 0 6px var(--note-time-glow), 0 0 14px var(--note-time-glow);
+  }
+
+  /* ---- Add-note popup: a copy of the concept tracker's New Concept popup (structure + sizes),
+     recolored to the site; no Obsidian parts (folder search, mark-as-link, fill tags); one row of tags ---- */
+  .np-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100; padding: 20px;
+    align-items: center; justify-content: center; background: var(--popup-dim);
+    font-family: 'Share Tech', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--popup-text);
+  }
+  .np-overlay.open { display: flex; }
+  .np-overlay * { box-sizing: border-box; }
+  .np-modal {
+    background: var(--popup-background); border: 1px solid var(--popup-border); border-radius: 18px;
+    width: 864px; height: 546px; max-width: calc(100% - 40px); max-height: calc(100% - 40px);
+    display: flex; flex-direction: column;
+    box-shadow: 0 0 0 1px var(--popup-border), 0 0 30px 4px var(--popup-glow), 0 0 70px 16px var(--popup-glow), 0 24px 60px rgba(0, 0, 0, 0.7);
+  }
+  .np-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 18px 20px 0 20px; }
+  .np-header-title { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+  .np-header h2 { font-size: 18px; margin: 0; font-weight: 600; }
+  .np-header select {
+    align-self: flex-start; font-family: inherit; font-size: 13.5px; padding: 6px 10px; border-radius: 8px;
+    border: 1px solid var(--popup-field-border); background: var(--popup-field-background); color: var(--popup-text);
+  }
+  .np-header select:focus { outline: none; border-color: var(--popup-accent); }
+  .np-header select option { background: var(--popup-background); }
+  .np-close {
+    border: none; background: transparent; color: var(--popup-text-muted); font-size: 20px; cursor: pointer;
+    padding: 4px 8px; border-radius: 8px; line-height: 1;
+  }
+  .np-close:hover { background: rgba(232, 240, 255, 0.1); color: var(--popup-text); }
+  .np-body { padding: 16px 20px 20px 20px; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; }
+  .np-field { margin-bottom: 14px; }
+  .np-field > label {
+    display: block; font-size: 12.5px; font-weight: 600; color: var(--popup-text-muted); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .np-field input[type="text"], .np-editor {
+    width: 100%; font-family: inherit; font-size: 15px; padding: 10px 12px;
+    border: 1px solid var(--popup-field-border); border-radius: 10px; background: var(--popup-field-background); color: var(--popup-text);
+  }
+  .np-field input[type="text"]:focus, .np-editor:focus { outline: none; border-color: var(--popup-accent); }
+  .np-field input[type="text"]::placeholder { color: rgba(232, 240, 255, 0.35); }
+  .np-body-field { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-bottom: 0; }
+  .np-editor { flex: 1; min-height: 0; overflow-y: auto; line-height: 1.5; overflow-wrap: break-word; }
+  .np-editor:empty::before { content: attr(data-placeholder); color: rgba(232, 240, 255, 0.35); }
+  .np-tags { margin-top: 18px; margin-bottom: 0; }
+  .np-tag-row { display: flex; align-items: flex-start; gap: 10px; }
+  .np-tag-label {
+    flex-shrink: 0; width: 78px; text-align: center; font-size: 12px; font-weight: 600; color: var(--popup-text-muted);
+    letter-spacing: 0.02em; padding: 8px 0; border: 1px solid var(--popup-field-border); border-radius: 10px; background: rgba(232, 240, 255, 0.05);
+  }
+  .np-tag-field { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .np-tag-field input[type="text"] { font-size: 13.5px; padding: 8px 12px; }
+  .np-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .np-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border-radius: 14px;
+    font-size: 12px; font-weight: 600; color: var(--popup-accent-text); background: var(--popup-tag); white-space: nowrap;
+  }
+  .np-chip button {
+    display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%;
+    border: none; background: rgba(0, 0, 0, 0.28); color: white; font-size: 11px; line-height: 1; cursor: pointer; padding: 0;
+  }
+  .np-chip button:hover { background: rgba(0, 0, 0, 0.5); }
+  .np-error { color: var(--popup-error); font-size: 13px; margin: 8px 0 0 0; display: none; }
+  .np-error.show { display: block; }
+  .np-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 4px 20px 20px 20px; }
+  .np-btn { border: none; border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .np-btn-primary { background: var(--popup-accent); color: var(--popup-accent-text); }
+  .np-btn-primary:hover { filter: brightness(1.1); }
+  .np-btn-secondary { background: rgba(232, 240, 255, 0.06); color: var(--popup-text); border: 1px solid var(--popup-field-border); }
+  .np-btn-secondary:hover { background: rgba(232, 240, 255, 0.14); }
+  /* "Delete this note?" confirm: the tracker's small confirm popup */
+  .np-confirm { width: 520px; height: auto; }
+  .np-confirm .np-body { padding-top: 4px; flex: none; }
+  .np-btn-danger { background: var(--trash-icon); color: var(--popup-accent-text); }
+  .np-btn-danger:hover { filter: brightness(1.1); }
+
+  /* Pinned notes: the right third, oldest first, each box with its time under it */
+  .pinned-note { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .pinned-note .text-box { width: 100%; box-sizing: border-box; }
+  .pinned-note .note-time { margin-left: 0; }
+  /* Pushpin in an opened note: owner only */
+  .note-pin {
+    flex: none; width: 28px; height: 28px; margin-left: 8px; padding: 0; border: none; background: transparent;
+    color: var(--pin-icon); cursor: pointer;
+  }
+  .note-pin svg { width: 100%; height: 100%; filter: drop-shadow(0 0 4px var(--pin-glow)); transition: transform 0.15s ease; }
+  .note-pin:hover svg { transform: scale(1.08); }
+  .note-pin.pinned .pin-head { fill: var(--pin-icon); }
+
+  /* Trash can beside each note's time: owner only (only created on localhost), same icon and glow as the tracker */
+  .note-trash {
+    flex: none; width: 30px; height: 30px; margin-left: 8px; padding: 0; border: none; background: transparent;
+    color: var(--trash-icon); cursor: pointer;
+  }
+  .note-trash svg {
+    width: 100%; height: 100%;
+    filter: drop-shadow(0 0 4px var(--trash-glow)) drop-shadow(0 0 12px var(--trash-glow));
+    transition: filter 0.15s ease, transform 0.15s ease;
+  }
+  .note-trash:hover svg { transform: scale(1.06); filter: drop-shadow(0 0 6px var(--trash-glow)) drop-shadow(0 0 18px var(--trash-glow)); }
+  .note-trash:active svg { transform: scale(0.94); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 6;
+    font: 1.2rem "VT323", monospace; color: var(--menu-button-icon); opacity: 0; transition: opacity 0.3s;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Pictures and icons can't be highlighted (selected) or dragged off as image files:
+     the portal, the guns, the beams, the social icons and the round menu buttons. */
+  .gun-wrap, .row-gun, .beam, #portal, .portal-pixels, .icon-ribbon, .menu {
+    -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ---- An open note: its parts placed by its layout (shares of this area: --x, --y, --w, --h) ---- */
+  .note-canvas { position: relative; flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }   /* scrolls when the note's frame is taller than the screen */
+  .note-frame { position: relative; width: 100%; }
+  .note-block {
+    position: absolute; box-sizing: border-box;
+    left: calc(var(--x) * 100%); top: calc(var(--y) * 100%); width: calc(var(--w) * 100%); height: calc(var(--h) * 100%);
+  }
+  .note-block > .note-title, .note-block > .note-body { height: 100%; box-sizing: border-box; margin: 0; }
+  .note-block > .note-title { overflow: hidden; }
+  /* Pictures: sized by content.js to fit their box even when rotated; the green outline hugs the picture */
+  .note-image {
+    position: absolute; left: 50%; top: 50%; display: block; box-sizing: border-box; cursor: pointer;
+    border: 2px solid var(--image-outline); border-radius: 8px; box-shadow: 0 0 10px var(--image-glow);
+  }
+  .note-image:focus-visible { outline: 2px dashed var(--image-outline); outline-offset: 4px; }
+  /* Picture popup (click a picture): big, outlined, caption underneath (only shown here) */
+  .lightbox { display: none; position: fixed; inset: 0; z-index: 110; background: var(--popup-dim); align-items: center; justify-content: center; }
+  .lightbox.open { display: flex; }
+  .lightbox-figure { margin: 0; width: 90vw; height: 88vh; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .lightbox-stage { position: relative; flex: 1; width: 100%; min-height: 0; }
+  .lightbox-img {
+    position: absolute; left: 50%; top: 50%; box-sizing: border-box;
+    border: 3px solid var(--image-outline); border-radius: 10px; box-shadow: 0 0 16px var(--image-glow), 0 0 36px var(--image-glow);
+  }
+  .lightbox-caption {
+    flex: none; max-width: 70ch; text-align: center; font: 1.5rem/1.3 "VT323", monospace; color: var(--lightbox-caption);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); outline: none; min-height: 1.3em;
+  }
+  .owner .lightbox-caption { cursor: text; }
+  .lightbox-caption:empty::before { content: attr(data-placeholder); opacity: 0.6; }
+  /* phones: no room for a free layout, so the parts stack in reading order */
+  @media (max-width: 760px) {
+    .note-canvas { overflow-y: auto; }
+    .note-frame { display: flex; flex-direction: column; gap: 14px; }
+    .note-block { position: static; width: auto; height: auto; }
+    .note-block > .note-title, .note-block > .note-body { height: auto; }
+    .note-block-text .note-body { max-height: 70vh; }
+    .note-image { position: static; width: 100% !important; height: auto !important; transform: none !important; }
+  }
+  /* Owner: the edit ribbon, in its own strip between the white line under the four boxes and a second
+     white line, only while a note is open (never on the live site: it's only created on localhost) */
+  .note-edit-bar { display: none; flex: none; flex-direction: column; gap: 14px; }
+  .inside.show-note .note-edit-bar { display: flex; }
+  .note-edit-row { display: flex; align-items: center; gap: 10px; }
+  .arrange-ribbon {
+    flex: 1; height: 26px; padding: 0; border: 1px dashed var(--arrange-ribbon); border-radius: 6px; background: transparent;
+    cursor: pointer; font: 1.1rem/24px "VT323", monospace; color: var(--arrange-ribbon); letter-spacing: 0.08em; opacity: 0.7;
+  }
+  .arrange-ribbon:hover { opacity: 1; background: var(--arrange-ribbon-hover); }
+  .edit-bar-pin { margin-left: 0; }
+
+  /* Arrange popup (owner) */
+  .ar-modal { width: 1200px; height: 800px; }
+  .ar-main { flex: 1; min-height: 0; display: flex; gap: 16px; padding: 12px 20px; }
+  .ar-stage { flex: 1; min-width: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 12px 0; }   /* scrolls when the frame is tall */
+  .ar-frame { position: relative; flex: none; background: var(--arrange-frame); border: 1px solid var(--popup-field-border); border-radius: 8px 8px 0 0; }
+  .ar-fold { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed var(--arrange-fold); z-index: 999; pointer-events: none; }
+  .ar-grow {
+    flex: none; box-sizing: border-box; height: 22px; text-align: center; font-size: 12.5px; line-height: 22px; cursor: ns-resize;
+    color: var(--popup-text-muted); background: var(--popup-field-background); border: 1px solid var(--popup-field-border);
+    border-top: none; border-radius: 0 0 8px 8px; touch-action: none; -webkit-user-select: none; user-select: none;
+  }
+  .ar-grow:hover { color: var(--popup-text); }
+  .ar-hidden { display: flex; flex-direction: column; gap: 6px; }
+  /* trash can on each shape: takes it out of the frame into the side list */
+  .ar-trash {
+    position: absolute; top: 3px; right: 3px; z-index: 3; width: 24px; height: 24px; padding: 3px; border-radius: 6px;
+    border: none; background: rgba(0, 0, 0, 0.55); color: var(--trash-icon); cursor: pointer;
+  }
+  .ar-trash svg { width: 100%; height: 100%; display: block; }
+  .ar-trash:hover { background: rgba(0, 0, 0, 0.8); }
+  .ar-show { width: auto; padding: 0 8px; }
+  .ar-shape {
+    position: absolute; box-sizing: border-box; border: 2px solid var(--arrange-shape-edge); border-radius: 6px;
+    background-color: var(--arrange-shape); background-size: cover; background-position: center;
+    cursor: move; touch-action: none; overflow: hidden; -webkit-user-select: none; user-select: none;
+  }
+  .ar-shape.ar-title { background-color: var(--arrange-shape-title); }
+  .ar-shape.selected { border-color: var(--popup-accent); box-shadow: 0 0 10px var(--popup-glow); }
+  .ar-shape.ar-image { background-color: var(--arrange-shape-image); border-color: var(--image-outline); }   /* a picture: just a box */
+  .ar-angle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 13px; color: var(--popup-text);
+              background: rgba(0, 0, 0, 0.55); padding: 1px 6px; border-radius: 4px; pointer-events: none; }
+  .ar-rotate {
+    position: absolute; top: 4px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; z-index: 2;
+    background: var(--popup-accent); border: 2px solid var(--popup-background); cursor: grab; touch-action: none;
+  }
+  .ar-label { z-index: 1; position: absolute; left: 6px; top: 4px; font-size: 13px; padding: 1px 6px; border-radius: 4px;
+              background: rgba(0, 0, 0, 0.55); color: var(--popup-text); white-space: nowrap; }
+  .ar-handle { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; background: var(--popup-accent); cursor: nwse-resize; }
+  .ar-side { width: 260px; flex: none; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+  .ar-list { display: flex; flex-direction: column; gap: 6px; }
+  .ar-row { display: flex; align-items: center; gap: 4px; padding: 6px 8px; border-radius: 8px; font-size: 13.5px;
+            border: 1px solid var(--popup-field-border); background: var(--popup-field-background); }
+  .ar-row.selected { border-color: var(--popup-accent); }
+  .ar-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+  .ar-mini { flex: none; width: 24px; height: 24px; padding: 0; border-radius: 6px; cursor: pointer; font: inherit;
+             border: 1px solid var(--popup-field-border); background: transparent; color: var(--popup-text); }
+  .ar-mini:disabled { opacity: 0.3; cursor: default; }
+  .ar-add, .np-pick { text-align: center; }
+  /* image thumbnails in the add-note popup */
+  .np-images { margin-top: 12px; margin-bottom: 0; }
+  .np-thumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .np-thumb { position: relative; width: 44px; height: 44px; border-radius: 6px; background-size: cover; background-position: center;
+              border: 1px solid var(--popup-field-border); }
+  .np-thumb button { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; border: none;
+                     padding: 0; font-size: 11px; line-height: 1; cursor: pointer; background: rgba(0, 0, 0, 0.7); color: white; }
+
+  /* ---- A box's page (Built, Experiments, ...): drawn from its own layout, like a note ---- */
+  .inside .split { display: none !important; }   /* the old fixed split is replaced by the page below */
+  .page-view { display: none; flex: 1; min-height: 0; flex-direction: column; }
+  .inside.show-split .page-view { display: flex; }
+  .inside.show-split .note-edit-bar { display: flex; }   /* owner: the edit ribbon arranges the box's page too */
+  /* Sidebars: the note boxes inside scale with the sidebar's width (cqw = 1% of the sidebar), so the
+     spacing stays even however wide or narrow you make it. Each sidebar scrolls if its notes don't fit. */
+  .page-list, .page-pins {
+    height: 100%; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; container-type: inline-size;
+    display: flex; flex-direction: column; gap: clamp(6px, 2.2cqw, 16px); padding: 8px 6px;
+  }
+  .page-list { --gun-width: clamp(26px, 8cqw, 75px); --gun-pull: 0px; --beam-scale: 0.667;
+               --beam-length: calc((0.193 * var(--gun-width) + var(--gun-pull) + 12px) * var(--beam-scale)); padding-left: 10px; }
+  .page-list .box-row { display: flex; align-items: center; }
+  .page-list .box-row .text-box { flex: 1; min-width: 0; }
+  .page-list .box-row.reorderable .text-box { cursor: grab; }   /* localhost only: drag a note box up or down */
+  .page-list .box-row.dragging { opacity: 0.4; }
+  .page-list .text-box.item, .page-pins .text-box.item {
+    cursor: pointer; transition: transform 0.15s ease-out; overflow-wrap: anywhere;
+    font-size: clamp(0.85rem, 3.4cqw, 1.6rem); padding: clamp(8px, 2cqw, 16px) clamp(10px, 3cqw, 22px);
+  }
+  .page-pins .text-box.item { font-size: clamp(0.85rem, 6cqw, 1.5rem); }
+  .page-list .text-box.item:hover, .page-pins .text-box.item:hover { transform: scale(1.03); }
+  .page-list .note-time, .page-pins .note-time { font-size: clamp(0.75rem, 2.6cqw, 1.15rem); margin-left: clamp(4px, 1.5cqw, 14px); }
+  .page-pins .note-time { margin-left: 0; font-size: clamp(0.75rem, 5cqw, 1.1rem); }
+  .page-list .note-trash { width: clamp(20px, 5cqw, 30px); height: clamp(20px, 5cqw, 30px); }
+  /* the white line runs along the long side of its box (up-down, or across when the box is wider than tall) */
+  .page-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); background: var(--divider-line); }
+  .page-line.across { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 1px; transform: translateY(-50%); }
+  @media (max-width: 760px) {
+    .page-list, .page-pins { height: auto; max-height: none; overflow: visible; }
+    .note-block-line { display: none; }
+  }
+  .ar-shape.ar-list, .ar-shape.ar-pins { background-color: var(--arrange-shape-list); }
+  .ar-shape.ar-line { background-color: var(--divider-line); }
+</style>
+<link rel="stylesheet" href="layout.css">
+</head>
+<body>
+  <canvas id="bubbles" aria-hidden="true"></canvas>
+  <script src="bubbles.js"></script>
+  <div class="scene">
+    <div class="movable" id="title"><h1 class="title">Click on the portal to initialize</h1></div>
+    <div class="movable" id="portal">
+      <img src="portal.png" alt="" draggable="false">
+      <canvas class="portal-pixels" role="img" aria-label="Green swirling portal, in pixel art"></canvas>
+    </div>
+  </div>
+  <!-- STASH SWITCH: true = skip the landing page and open already inside the portal (for building the inside).
+       Set back to false to bring the landing page + click-to-zoom back. -->
+  <script>window.SKIP_INTRO = false;</script>
+
+  <!-- Inside the portal: shown after the click-zoom finishes -->
+  <main class="inside">
+    <!-- social icons: each opens its profile in a new tab -->
+    <div class="icon-ribbon" aria-label="Social profiles">
+      <a class="social-link" href="https://www.instagram.com/brea.d369/" target="_blank" rel="noopener noreferrer" title="Instagram"><svg viewBox="0 0 24 24" role="img" aria-label="Instagram"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg></a>
+      <a class="social-link" href="https://www.linkedin.com/in/aaryan-jain-312244217" target="_blank" rel="noopener noreferrer" title="LinkedIn"><svg viewBox="0 0 24 24" role="img" aria-label="LinkedIn"><path d="M20.4 20.5h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.8 3.4-1.8 3.6 0 4.3 2.4 4.3 5.5v6.2zM5.3 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM7.1 20.5H3.6V9h3.5v11.5zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 .9.8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7C24 .8 23.2 0 22.2 0z"/></svg></a>
+      <a class="social-link" href="https://substack.com/@aaryanjain1" target="_blank" rel="noopener noreferrer" title="Substack"><svg viewBox="0 0 24 24" role="img" aria-label="Substack"><path d="M22.5 5.4H1.5V2.6h21v2.8zM1.5 8.2v13.2L12 15.5l10.5 5.9V8.2h-21zM22.5 0H1.5v2.8h21V0z"/></svg></a>
+    </div>
+
+    <h1 class="text-box name-box clickable" id="home-title" role="button" tabindex="0">Hey, I'm Aaryan.</h1>
+
+    <div class="ribbon-slot">
+      <div class="text-box clickable section-tab" data-section="built" role="button" tabindex="0"><span>Built</span></div>
+      <div class="text-box clickable section-tab" data-section="experiments" role="button" tabindex="0"><span>Experiments</span></div>
+      <div class="text-box clickable section-tab" data-section="blogs" role="button" tabindex="0"><span>Blogs</span></div>
+      <div class="text-box clickable section-tab" data-section="my-system" role="button" tabindex="0"><span>My System</span></div>
+    </div>
+
+    <!-- thin white line between the four boxes and the area below them (Bio / split / note) -->
+    <div class="divider-horizontal" aria-hidden="true"></div>
+
+    <!-- Bio: a fixed "Bio" heading (never editable) and, on the next line, your bio text (gold).
+         On your laptop, clicking anywhere in the box puts the cursor in the text. -->
+    <div class="text-box bio-box">
+      <div class="bio-label">Bio</div>
+      <div class="bio-text"></div>
+    </div>
+
+    <!-- The split layout (2/3 left with guns + beams | white line | 1/3 right). Kept in a <template>;
+         content.js copies it in once, right after the Bio, and fills the left side with the chosen section's items. -->
+    <template id="stash-split">
+      <div class="split">
+        <!-- left 2/3: one row per item in the chosen section (gun + beam + box), drawn by content.js -->
+        <section class="split-left"></section>
+        <div class="divider" aria-hidden="true"></div>
+        <section class="split-right"></section>
+      </div>
+    </template>
+  </main>
+
+  <!-- Round menu, bottom right. Order in the code is right-to-left on screen: list, message, plus. -->
+  <div class="menu" id="menu">
+    <button type="button" class="menu-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><path d="M9 5.5h12M9 12h12M9 18.5h12"/><circle class="dot" cx="3.75" cy="5.5" r="1.75"/><circle class="dot" cx="3.75" cy="12" r="1.75"/><circle class="dot" cx="3.75" cy="18.5" r="1.75"/></svg>
+    </button>
+    <button type="button" class="menu-extra menu-message" aria-label="Send a message">
+      <svg viewBox="0 0 24 24"><path class="dot" d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12z"/></svg>
+    </button>
+    <button type="button" class="menu-extra menu-plus" aria-label="Add a post">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+  <script>
+    // Owner check: on your own computer (localhost) the page gets the "owner" class, which shows the plus button.
+    if (["localhost", "127.0.0.1"].includes(location.hostname)) document.body.classList.add("owner");
+    // The menu opens on hover (CSS). This click toggle is for phones, which can't hover.
+    // The message and plus buttons don't do anything yet.
+    (() => {
+      const menu = document.getElementById("menu"), toggle = menu.querySelector(".menu-toggle");
+      toggle.addEventListener("click", () => toggle.setAttribute("aria-expanded", menu.classList.toggle("open")));
+    })();
+  </script>
+
+  <script src="content.js"></script>
+  <script src="pop-in.js"></script>   <!-- before portal-pixels.js, so it's listening when the zoom ends -->
+  <script src="portal-pixels.js"></script>
+
+  <!-- (The old drag-to-place layout editor, editor.js, is switched off. To bring it back, load editor.js here on localhost.) -->
+</body>
+</html>

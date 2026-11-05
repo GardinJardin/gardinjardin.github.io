@@ -1,0 +1,83 @@
+{
+  "id": "pinns-mw2u1nrn",
+  "title": "PINNs",
+  "created": "2026-11-04",
+  "added": "2026-11-04T19:54",
+  "tags": [
+    "machine-learning",
+    "physics",
+    "pinn"
+  ],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.0421
+      },
+      {
+        "kind": "text",
+        "x": 0.04,
+        "y": 0.0646,
+        "w": 0.92,
+        "h": 0.229,
+        "file": "body.html"
+      },
+      {
+        "kind": "text",
+        "x": 0.025,
+        "y": 0.4229,
+        "w": 0.515,
+        "h": 0.1938,
+        "file": "text-67f06s.html"
+      },
+      {
+        "kind": "text",
+        "x": 0.47,
+        "y": 0.74,
+        "w": 0.51,
+        "h": 0.2349,
+        "file": "text-soz738.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.045,
+        "y": 0.685,
+        "w": 0.4508,
+        "h": 0.2018,
+        "src": "images/screenshot-2026-11-04-at-8-01-46-pm.png",
+        "rotate": -30.0,
+        "ratio": 2.05629,
+        "caption": "Obsidian-Connected note interface, used to help me think"
+      },
+      {
+        "kind": "image",
+        "x": 0.57,
+        "y": 0.5403,
+        "w": 0.4196,
+        "h": 0.1168,
+        "src": "images/1arwburah1zp7qxzrkfuyhw.png",
+        "rotate": 15.0,
+        "ratio": 3.30942
+      },
+      {
+        "kind": "image",
+        "x": 0.6,
+        "y": 0.3876,
+        "w": 0.3,
+        "h": 0.1553,
+        "src": "images/physics-informed-nerural-networks.png",
+        "rotate": -30.0,
+        "ratio": 1.77778
+      }
+    ],
+    "aspect": 1.0866
+  },
+  "textFiles": [
+    "body.html",
+    "text-67f06s.html",
+    "text-soz738.html"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "jealousy-is-for-losers-mw2virtb",
+  "title": "Jealousy is for losers",
+  "created": "2026-11-04",
+  "added": "2026-11-04T20:35",
+  "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.235
+      },
+      {
+        "kind": "text",
+        "x": 0.0,
+        "y": 0.29,
+        "w": 1.0,
+        "h": 0.6292,
+        "file": "body.html"
+      }
+    ],
+    "aspect": 0.2
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}

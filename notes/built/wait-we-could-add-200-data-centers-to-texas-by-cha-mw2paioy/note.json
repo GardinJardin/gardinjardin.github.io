@@ -1,0 +1,71 @@
+{
+  "id": "wait-we-could-add-200-data-centers-to-texas-by-cha-mw2paioy",
+  "title": "Wait, we could add 200+ data centers to Texas by changing regulation?",
+  "created": "2026-11-04",
+  "added": "2026-11-04T17:40",
+  "tags": [],
+  "pinned": true,
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.1418
+      },
+      {
+        "kind": "text",
+        "x": 0.015,
+        "y": 0.1648,
+        "w": 0.455,
+        "h": 0.52,
+        "file": "body.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.535,
+        "y": 0.635,
+        "w": 0.39,
+        "h": 0.2509,
+        "src": "images/screenshot-2026-11-04-at-6-47-20-pm.png",
+        "rotate": 15.0,
+        "ratio": 2.308,
+        "caption": "This is the website I created"
+      },
+      {
+        "kind": "image",
+        "x": 0.695,
+        "y": 0.5314,
+        "w": 0.27,
+        "h": 0.1219,
+        "src": "images/screenshot-2026-11-04-at-6-47-28-pm.png",
+        "rotate": 15.0,
+        "ratio": 3.28814
+      },
+      {
+        "kind": "image",
+        "x": 0.48,
+        "y": 0.2842,
+        "w": 0.4747,
+        "h": 0.194,
+        "src": "images/screenshot-2026-11-04-at-6-47-52-pm.png",
+        "rotate": -30.0,
+        "ratio": 3.63467
+      },
+      {
+        "kind": "text",
+        "x": 0.02,
+        "y": 0.745,
+        "w": 0.585,
+        "h": 0.22,
+        "file": "text-aljc17.html"
+      }
+    ],
+    "aspect": 0.6734
+  },
+  "textFiles": [
+    "text-aljc17.html",
+    "body.html"
+  ]
+}

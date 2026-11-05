@@ -1,0 +1,56 @@
+{
+  "id": "mit-climate-and-energy-hackathon-mw2un0za",
+  "title": "MIT Climate and Energy Hackathon",
+  "created": "2026-11-04",
+  "added": "2026-11-04T20:10",
+  "tags": [
+    "adventure",
+    "energy",
+    "climate",
+    "hackathon"
+  ],
+  "pinned": true,
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.04
+      },
+      {
+        "kind": "text",
+        "x": 0.01,
+        "y": 0.0533,
+        "w": 0.675,
+        "h": 0.3595,
+        "file": "body.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.505,
+        "y": 0.17,
+        "w": 0.46,
+        "h": 0.1639,
+        "src": "images/images-1.jpeg",
+        "rotate": -15.0,
+        "ratio": 2.45965
+      },
+      {
+        "kind": "image",
+        "x": 0.33,
+        "y": 0.35,
+        "w": 0.4601,
+        "h": 0.269,
+        "src": "images/images.jpeg",
+        "rotate": 15.0,
+        "ratio": 1.49863
+      }
+    ],
+    "aspect": 1.1414
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}

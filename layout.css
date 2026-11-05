@@ -1,0 +1,4 @@
+/* Written by the layout editor (editor.js + dev-server.py). Drag and resize on localhost instead of editing by hand.
+   left/top = the image's top-left corner, as % of the screen's width/height. width = % of screen width. */
+#title { left: 7.9vw; top: 4.2vh; width: 85.8vw; }
+#portal { left: 14.2vw; top: 20.3vh; width: 72.2vw; }

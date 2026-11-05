@@ -1,0 +1,34 @@
+{
+  "id": "companies-are-robots-mw2q4jii",
+  "title": "Companies are robots",
+  "created": "2026-11-04",
+  "added": "2026-11-04T18:04",
+  "tags": [
+    "mental-reframes",
+    "systems"
+  ],
+  "pinned": true,
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.1417
+      },
+      {
+        "kind": "text",
+        "x": 0.01,
+        "y": 0.175,
+        "w": 0.985,
+        "h": 0.8094,
+        "file": "body.html"
+      }
+    ],
+    "aspect": 0.3227
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}

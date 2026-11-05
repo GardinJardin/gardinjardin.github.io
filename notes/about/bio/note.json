@@ -1,0 +1,38 @@
+{
+  "id": "bio",
+  "title": "Bio",
+  "created": "2026-11-04",
+  "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.1327
+      },
+      {
+        "kind": "text",
+        "x": 0.02,
+        "y": 0.1736,
+        "w": 0.6,
+        "h": 0.615,
+        "file": "body.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.65,
+        "y": 0.1736,
+        "w": 0.3015,
+        "h": 0.7593,
+        "src": "images/selfieshot.png",
+        "ratio": 1.0
+      }
+    ],
+    "aspect": 0.3971
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}

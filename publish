@@ -1,0 +1,10 @@
+#!/bin/bash
+# Publish the site: ./publish   (from this folder). Sends everything you saved on localhost to GitHub Pages;
+# it's live at https://gardinjardin.github.io about a minute later.
+cd "$(dirname "$0")" || exit 1
+if grep -q 'window.SKIP_INTRO = true' index.html; then
+  echo "Not published: SKIP_INTRO is true in index.html (the landing page is switched off). Set it to false first."; exit 1
+fi
+git add -A
+if git diff --cached --quiet; then echo "Nothing new to publish."; exit 0; fi
+git commit -q -m "Update site $(date '+%Y-%m-%d %H:%M')" && git push -q && echo "Published. Live in about a minute: https://gardinjardin.github.io"
