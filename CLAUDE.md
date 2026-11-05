@@ -18,3 +18,7 @@ Preview: `python3 dev-server.py` in this folder, then http://localhost:8100.
 - `content.json` = bio + an INDEX of notes, rebuilt by `dev-server.py` from the folders on every save. Don't hand-edit the index; edit the folders.
 - Deleted notes move to `notes/.trash/` (dot-folder: not published by GitHub Pages).
 - Owner tools (editing, plus popup, arrange popup, pin, tags, trash) exist only on localhost; all saving goes through `dev-server.py` routes.
+
+## Publishing (live since 2026-11-05)
+- Live at https://gardinjardin.github.io (repo GardinJardin/gardinjardin.github.io, branch main, GitHub Pages). The old June repo of that name was renamed to `gardinjardin-old-june` (private).
+- Edit on localhost (saves to disk), then `./publish` (commits everything + pushes; refuses if SKIP_INTRO is true). `.gitignore` keeps out the downloaded originals, `__pycache__`, `notes/.trash`.
