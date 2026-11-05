@@ -473,6 +473,33 @@
   .np-btn-primary:hover { filter: brightness(1.1); }
   .np-btn-secondary { background: rgba(232, 240, 255, 0.06); color: var(--popup-text); border: 1px solid var(--popup-field-border); }
   .np-btn-secondary:hover { background: rgba(232, 240, 255, 0.14); }
+  /* Message popup (contact.js): the add-note popup's look, smaller; the message field is a plain text area */
+  .contact-modal { width: 620px; height: 560px; }
+  .contact-modal textarea {
+    flex: 1; min-height: 120px; width: 100%; resize: none; font-family: inherit; font-size: 15px; padding: 10px 12px; line-height: 1.5;
+    border: 1px solid var(--popup-field-border); border-radius: 10px; background: var(--popup-field-background); color: var(--popup-text);
+  }
+  .contact-modal textarea:focus { outline: none; border-color: var(--popup-accent); }
+  .contact-modal textarea::placeholder { color: rgba(232, 240, 255, 0.35); }
+  .contact-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }   /* spam trap: off screen */
+  .contact-status.contact-ok { color: var(--popup-accent); }
+  .contact-style { align-self: center; margin-right: 8px; padding: 6px 12px; font-size: 13px; }   /* "Make it boring / fun" */
+  /* Fun look (default): the site's pixel font and neon colors; letter sizes stay exactly the boring popup's */
+  .contact-fun { font-family: "VT323", monospace; color: var(--text-box-text); }
+  .contact-fun .np-modal {
+    background: var(--text-box-background); border-color: var(--text-box-outline);
+    box-shadow: 0 0 0 1px var(--text-box-outline), 0 0 18px 3px var(--text-box-glow), 0 0 50px 10px var(--popup-glow), 0 24px 60px rgba(0, 0, 0, 0.7);
+  }
+  .contact-fun .np-header h2 { font-weight: 400; }   /* the pixel font has no bold */
+  .contact-fun .np-field > label, .contact-fun .np-close { color: var(--text-box-text); opacity: 0.75; }
+  .contact-fun .np-field input[type="text"], .contact-fun .contact-modal textarea {
+    color: var(--text-box-text); border-color: var(--text-box-outline); background: var(--popup-field-background);
+  }
+  .contact-fun .np-field input[type="text"]:focus, .contact-fun .contact-modal textarea:focus { box-shadow: 0 0 8px var(--text-box-glow); }
+  .contact-fun .np-field input[type="text"]::placeholder, .contact-fun .contact-modal textarea::placeholder { color: var(--text-box-text); opacity: 0.4; }
+  .contact-fun .np-btn-secondary { color: var(--text-box-text); border-color: var(--text-box-outline); background: transparent; }
+  .contact-fun .np-btn-secondary:hover { background: var(--note-code-background); }
+  .contact-fun .np-btn { font-weight: 400; }
   /* "Delete this note?" confirm: the tracker's small confirm popup */
   .np-confirm { width: 520px; height: auto; }
   .np-confirm .np-body { padding-top: 4px; flex: none; }
@@ -732,7 +759,7 @@
     // Owner check: on your own computer (localhost) the page gets the "owner" class, which shows the plus button.
     if (["localhost", "127.0.0.1"].includes(location.hostname)) document.body.classList.add("owner");
     // The menu opens on hover (CSS). This click toggle is for phones, which can't hover.
-    // The message and plus buttons don't do anything yet.
+    // The message button opens the message popup (contact.js); the plus button adds a note (owner only).
     (() => {
       const menu = document.getElementById("menu"), toggle = menu.querySelector(".menu-toggle");
       toggle.addEventListener("click", () => toggle.setAttribute("aria-expanded", menu.classList.toggle("open")));
@@ -740,6 +767,7 @@
   </script>
 
   <script src="content.js"></script>
+  <script src="contact.js"></script>   <!-- the message button: opens the "send me a message" popup -->
   <script src="materialize.js"></script>   <!-- before portal-pixels.js, so it's listening when the zoom ends -->
   <script src="portal-pixels.js"></script>
 
