@@ -5,6 +5,26 @@
   "added": "2026-11-04T20:34",
   "tags": [],
   "pinned": true,
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.0851
+      },
+      {
+        "kind": "text",
+        "x": 0.025,
+        "y": 0.1015,
+        "w": 0.62,
+        "h": 0.3732,
+        "file": "body.html"
+      }
+    ],
+    "aspect": 0.4956
+  },
   "textFiles": [
     "body.html"
   ]

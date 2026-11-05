@@ -4,6 +4,25 @@
   "created": "2026-11-04",
   "added": "2026-11-04T20:21",
   "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.13
+      },
+      {
+        "kind": "text",
+        "x": 0.03,
+        "y": 0.2,
+        "w": 0.69,
+        "h": 0.55,
+        "file": "body.html"
+      }
+    ]
+  },
   "textFiles": [
     "body.html"
   ]

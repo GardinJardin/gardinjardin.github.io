@@ -15,38 +15,38 @@
         "x": 0.0,
         "y": 0.0,
         "w": 1.0,
-        "h": 0.0421
+        "h": 0.0504
       },
       {
         "kind": "text",
         "x": 0.04,
-        "y": 0.0646,
-        "w": 0.92,
-        "h": 0.229,
+        "y": 0.0774,
+        "w": 0.83,
+        "h": 0.2276,
         "file": "body.html"
       },
       {
         "kind": "text",
         "x": 0.025,
-        "y": 0.42,
+        "y": 0.3894,
         "w": 0.365,
-        "h": 0.165,
+        "h": 0.1977,
         "file": "text-67f06s.html"
       },
       {
         "kind": "text",
-        "x": 0.47,
-        "y": 0.74,
+        "x": 0.48,
+        "y": 0.7248,
         "w": 0.37,
-        "h": 0.17,
+        "h": 0.2037,
         "file": "text-soz738.html"
       },
       {
         "kind": "image",
-        "x": 0.045,
-        "y": 0.685,
+        "x": 0.05,
+        "y": 0.6529,
         "w": 0.4508,
-        "h": 0.2018,
+        "h": 0.2418,
         "src": "images/screenshot-2026-11-04-at-8-01-46-pm.png",
         "rotate": -30.0,
         "ratio": 2.05629,
@@ -55,9 +55,9 @@
       {
         "kind": "image",
         "x": 0.57,
-        "y": 0.5403,
+        "y": 0.5631,
         "w": 0.4196,
-        "h": 0.1168,
+        "h": 0.1399,
         "src": "images/1arwburah1zp7qxzrkfuyhw.png",
         "rotate": 15.0,
         "ratio": 3.30942
@@ -65,19 +65,19 @@
       {
         "kind": "image",
         "x": 0.6,
-        "y": 0.3876,
+        "y": 0.3954,
         "w": 0.3,
-        "h": 0.1553,
+        "h": 0.1861,
         "src": "images/physics-informed-nerural-networks.png",
         "rotate": -30.0,
         "ratio": 1.77778
       }
     ],
-    "aspect": 1.0866
+    "aspect": 0.907
   },
   "textFiles": [
-    "text-67f06s.html",
+    "body.html",
     "text-soz738.html",
-    "body.html"
+    "text-67f06s.html"
   ]
 }

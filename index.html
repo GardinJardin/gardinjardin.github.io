@@ -37,7 +37,10 @@
     --image-outline: #39ff14;                /* green outline around every picture in a note */
     --lightbox-caption: #f4f1ea;             /* a picture's caption in its popup */
     --image-glow: rgba(57, 255, 20, 0.55);   /* neon green halo around the portal; last number = strength (0 to 1) */
-    --pop-seconds: 0.22s;                    /* how long each part takes to pop onto the screen after the zoom */
+    /* Materialize after the zoom: each part of the page appears square by square, from its bottom edge up (materialize.js). */
+    --materialize-pixel: 14px;               /* side of one square (half a background square); bigger = chunkier and lighter on the computer */
+    --materialize-seconds: 0.7;              /* how long a part takes to fill from its bottom row to its top row, in seconds */
+    --materialize-ragged: 250;               /* random extra wait per square, in milliseconds: 0 = a clean upward wipe, bigger = more scattered */
     --portal-gap: 2.5vh;                     /* landing page: space between the title box and the portal, and under the portal */
     --zoom-seconds: 5;                       /* clicking the portal: how long it takes to grow until it fills the screen */
     --portal-spin-seconds: 18;               /* one full turn of the pixel portal takes this long (0 = still) */
@@ -172,11 +175,7 @@
     opacity: 0; visibility: hidden; transition: opacity 1.2s;
     font-family: "VT323", monospace; color: var(--text-box-text);
   }
-  .portal-arrived .inside, .portal-arrived .menu { opacity: 1; visibility: visible; transition: none; }   /* no fade: the parts pop in instead (pop-in.js) */
-  /* Pop-in after the zoom: each part waits hidden, then pops: overshoots a little, settles at full size */
-  .pop-wait { opacity: 0 !important; }
-  .pop { animation: pop-in var(--pop-seconds) cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
-  @keyframes pop-in { from { opacity: 0; transform: scale(0.4); } 60% { opacity: 1; } to { opacity: 1; transform: scale(1); } }
+  .portal-arrived .inside, .portal-arrived .menu { opacity: 1; visibility: visible; transition: none; }   /* no fade: the parts materialize instead (materialize.js) */
 
   /* A text box: gray-green fill, with the neon line drawn a few pixels INSIDE the edge,
      so the gray shows a smidge beyond the line. The line + its glow is a separate layer (::before). */
@@ -741,7 +740,7 @@
   </script>
 
   <script src="content.js"></script>
-  <script src="pop-in.js"></script>   <!-- before portal-pixels.js, so it's listening when the zoom ends -->
+  <script src="materialize.js"></script>   <!-- before portal-pixels.js, so it's listening when the zoom ends -->
   <script src="portal-pixels.js"></script>
 
   <!-- (The old drag-to-place layout editor, editor.js, is switched off. To bring it back, load editor.js here on localhost.) -->
