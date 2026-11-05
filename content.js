@@ -303,16 +303,16 @@
       const data = await r.json().catch(() => ({}));
       if (!r.ok) { say(`save failed: ${data.error || r.status}`); return null; }
       return data;
-    } catch { say("save failed (is dev-server.py running?)"); return null; }
+    } catch { say("save failed (is the server running?)"); return null; }
   }
   async function saveBio() {
-    if (await post("/save-bio", { bio: content.bio })) say("saved");
+    if (await post("save-bio", { bio: content.bio })) say("saved");
   }
   // A note = its folder: note.json (meta + layout) and one .html file per text box (body.html is the first).
   // texts = { "body.html": "<p>…</p>", "text-ab12.html": "…" }. The server rebuilds the index and sends it back.
   async function saveNote(section, meta, texts) {
     meta.textFiles = Object.keys(texts).length ? Object.keys(texts) : ["body.html"];   // every text box, shown or hidden
-    const r = await post("/save-note", { section, note: meta, texts });
+    const r = await post("save-note", { section, note: meta, texts });
     if (!r) return false;
     content.sections = r.index.sections;
     if (r.pinRefused) { delete meta.pinned; say("saved (not pinned: this box already has 3 pins)"); }
@@ -321,7 +321,7 @@
   }
   async function uploadImage(section, id, file) {
     const q = new URLSearchParams({ section, id, name: file.name || "image.png" });
-    const r = await post(`/upload-image?${q}`, file);
+    const r = await post(`upload-image?${q}`, file);
     return r ? r.src : null;
   }
   const noteUrl = (section, id, file) => `notes/${section}/${id}/${file}`;
@@ -389,7 +389,7 @@
   async function saveOpen(o) {
     if (!o.isPage) return saveNote(o.section, o.meta, o.texts);
     o.meta.textFiles = Object.keys(o.texts);
-    const r = await post("/save-page", { section: o.section, page: { layout: o.meta.layout, textFiles: o.meta.textFiles }, texts: o.texts });
+    const r = await post("save-page", { section: o.section, page: { layout: o.meta.layout, textFiles: o.meta.textFiles }, texts: o.texts });
     if (!r) return false;
     content.sections = r.index.sections;
     say("saved");
@@ -897,7 +897,7 @@
         dragged = null;
         const order = ids();
         if (order.join(",") === before) return;
-        const r = await post("/save-order", { section, order });
+        const r = await post("save-order", { section, order });
         if (r) { content.sections = r.index.sections; say("order saved"); }
       });
     });
@@ -1431,7 +1431,7 @@
     if (!pendingDelete) return closeConfirm();
     const { section, item } = pendingDelete;
     closeConfirm();
-    const r = await post("/delete-note", { section, id: item.id });
+    const r = await post("delete-note", { section, id: item.id });
     if (r) { content.sections = r.index.sections; say("deleted"); showSection(section); }
   });
 

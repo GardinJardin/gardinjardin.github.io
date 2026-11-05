@@ -39,7 +39,7 @@
       };
     });
     try {
-      const r = await fetch("/save-layout", { method: "POST", body: JSON.stringify(layout) });
+      const r = await fetch("save-layout", { method: "POST", body: JSON.stringify(layout) });
       status.textContent = r.ok ? "saved" : "save failed (is dev-server.py running?)";
     } catch {
       status.textContent = "save failed (is dev-server.py running?)";

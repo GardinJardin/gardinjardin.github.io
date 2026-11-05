@@ -28,17 +28,17 @@
       {
         "kind": "text",
         "x": 0.025,
-        "y": 0.4229,
-        "w": 0.515,
-        "h": 0.1938,
+        "y": 0.42,
+        "w": 0.365,
+        "h": 0.165,
         "file": "text-67f06s.html"
       },
       {
         "kind": "text",
         "x": 0.47,
         "y": 0.74,
-        "w": 0.51,
-        "h": 0.2349,
+        "w": 0.37,
+        "h": 0.17,
         "file": "text-soz738.html"
       },
       {
@@ -76,8 +76,8 @@
     "aspect": 1.0866
   },
   "textFiles": [
-    "body.html",
     "text-67f06s.html",
-    "text-soz738.html"
+    "text-soz738.html",
+    "body.html"
   ]
 }
