@@ -59,6 +59,13 @@
     ],
     "my-system": [
       {
+        "id": "stop-using-notion-or-google-docs-or-obsidian-mw4mu8z9",
+        "title": "Stop using Notion or Google docs or Obsidian",
+        "created": "2026-11-06",
+        "added": "2026-11-06T02:07",
+        "tags": []
+      },
+      {
         "id": "optimizing-for-failure-mw2vi3l5",
         "title": "Optimizing for failure",
         "created": "2026-11-04",
@@ -82,7 +89,7 @@
       },
       {
         "id": "start-small-mw43koan",
-        "title": "Start small(exercise)",
+        "title": "Start small",
         "created": "2026-11-05",
         "added": "2026-11-05T17:08",
         "tags": []

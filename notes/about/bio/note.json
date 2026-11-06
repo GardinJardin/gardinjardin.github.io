@@ -8,12 +8,12 @@
       {
         "kind": "image",
         "x": 0.015,
-        "y": 0.0956,
+        "y": 0.005,
         "w": 0.9698,
         "h": 0.5848,
         "src": "images/images-4.jpg",
         "ratio": 1.77112,
-        "caption": "optimistic nihlism"
+        "caption": "optimistic nihlism goes hard"
       },
       {
         "kind": "text",
@@ -32,8 +32,7 @@
         "h": 0.2435,
         "src": "images/selfieshot.png",
         "rotate": -30.0,
-        "ratio": 1.0,
-        "caption": "my dad said the asymmetrical light looked weird for linkedin - is is true?"
+        "ratio": 1.0
       },
       {
         "kind": "image",
@@ -55,7 +54,7 @@
         "src": "images/img-6625.jpg",
         "rotate": 45.0,
         "ratio": 0.75,
-        "caption": "NYC Halloween 2026(no one tells you it's boring asf)"
+        "caption": "NYC Halloween 2026(no one tells you it's boring asf unless you're with friends)"
       },
       {
         "kind": "text",
@@ -74,7 +73,8 @@
         "h": 0.28,
         "src": "images/eragon.jpg",
         "rotate": -30.0,
-        "ratio": 0.56157
+        "ratio": 0.56157,
+        "caption": "this has actually been bugging me for a long time: is this style Chinese dragons? It looks more like that than standard european dragons, but she's in a standard Medieval European-inspired fantasy aesthetic. Cultural Diffusion?"
       },
       {
         "kind": "image",
@@ -88,7 +88,7 @@
       {
         "kind": "image",
         "x": 0.5,
-        "y": 0.6545,
+        "y": 0.615,
         "w": 0.199,
         "h": 0.2834,
         "src": "images/indianfantasyvishnu.jpg",
@@ -97,8 +97,8 @@
       },
       {
         "kind": "image",
-        "x": 0.725,
-        "y": 0.7363,
+        "x": 0.73,
+        "y": 0.685,
         "w": 0.2682,
         "h": 0.1607,
         "src": "images/coolspacedrawing.jpg",
@@ -107,8 +107,8 @@
       },
       {
         "kind": "image",
-        "x": 0.655,
-        "y": 0.6486,
+        "x": 0.66,
+        "y": 0.62,
         "w": 0.1723,
         "h": 0.2761,
         "src": "images/asurasfantasy.jpg",
@@ -118,7 +118,7 @@
       {
         "kind": "text",
         "x": 0.545,
-        "y": 0.6359,
+        "y": 0.565,
         "w": 0.42,
         "h": 0.0796,
         "size": 0.54,
@@ -148,7 +148,7 @@
   },
   "textFiles": [
     "text-pfol82.html",
-    "body.html",
-    "text-leflqh.html"
+    "text-leflqh.html",
+    "body.html"
   ]
 }

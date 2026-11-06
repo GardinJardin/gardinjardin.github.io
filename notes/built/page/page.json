@@ -6,33 +6,54 @@
         "kind": "list",
         "x": 0.0,
         "y": 0.0,
-        "w": 0.64,
-        "h": 1.0
+        "w": 0.635,
+        "h": 0.7228
       },
       {
         "kind": "line",
-        "x": 0.655,
+        "x": 0.64,
         "y": 0.0,
-        "w": 0.01,
-        "h": 1.0
+        "w": 0.03,
+        "h": 0.715
       },
       {
         "kind": "pins",
         "x": 0.67,
-        "y": 0.315,
+        "y": 0.21,
         "w": 0.33,
-        "h": 0.685
+        "h": 0.505
       },
       {
         "kind": "text",
-        "x": 0.675,
-        "y": 0.01,
-        "w": 0.325,
-        "h": 0.275,
-        "size": 0.89,
+        "x": 0.72,
+        "y": 0.025,
+        "w": 0.225,
+        "h": 0.155,
+        "size": 0.54,
         "file": "text-xzlkbw.html"
+      },
+      {
+        "kind": "link",
+        "x": 0.1,
+        "y": 0.81,
+        "w": 0.35,
+        "h": 0.12,
+        "display": "Substack Essays",
+        "url": "https://substack.com/@aaryanjain1",
+        "size": 0.48
+      },
+      {
+        "kind": "link",
+        "x": 0.54,
+        "y": 0.805,
+        "w": 0.36,
+        "h": 0.13,
+        "display": "Github",
+        "url": "https://github.com/GardinJardin",
+        "size": 0.48
       }
-    ]
+    ],
+    "aspect": 0.493
   },
   "textFiles": [
     "text-xzlkbw.html"

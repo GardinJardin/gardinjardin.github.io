@@ -637,6 +637,8 @@
   .lightbox-caption {
     flex: none; max-width: 70ch; text-align: center; font: 1.5rem/1.3 "VT323", monospace; color: var(--lightbox-caption);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); outline: none; min-height: 1.3em;
+    position: relative; z-index: 1;                 /* always drawn above the picture, never behind it */
+    max-height: 30vh; overflow-y: auto;            /* a very long caption scrolls instead of squeezing the picture to nothing */
   }
   .owner .lightbox-caption { cursor: text; }
   .lightbox-caption:empty::before { content: attr(data-placeholder); opacity: 0.6; }

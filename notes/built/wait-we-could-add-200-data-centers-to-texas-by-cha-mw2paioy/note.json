@@ -86,10 +86,22 @@
         "size": 0.44
       }
     ],
+    "hidden": [
+      {
+        "kind": "link",
+        "x": 0.42,
+        "y": 0.635,
+        "w": 0.27,
+        "h": 0.08,
+        "rotate": -15.0,
+        "display": "",
+        "url": ""
+      }
+    ],
     "aspect": 0.7418
   },
   "textFiles": [
-    "text-aljc17.html",
-    "body.html"
+    "body.html",
+    "text-aljc17.html"
   ]
 }

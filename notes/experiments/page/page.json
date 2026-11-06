@@ -4,16 +4,6 @@
     "blocks": [
       {
         "kind": "image",
-        "x": 0.62,
-        "y": 0.47,
-        "w": 0.3616,
-        "h": 0.4107,
-        "src": "images/rickmortygaragefluid.jpg",
-        "rotate": -15.0,
-        "ratio": 2.22911
-      },
-      {
-        "kind": "image",
         "x": 0.655,
         "y": 0.16,
         "w": 0.3097,
@@ -44,6 +34,16 @@
         "y": 0.0,
         "w": 0.19,
         "h": 0.2676
+      },
+      {
+        "kind": "image",
+        "x": 0.62,
+        "y": 0.47,
+        "w": 0.3616,
+        "h": 0.4107,
+        "src": "images/rickmortygaragefluid.jpg",
+        "rotate": -15.0,
+        "ratio": 2.22911
       }
     ],
     "aspect": 0.395

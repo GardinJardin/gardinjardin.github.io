@@ -715,6 +715,9 @@
   const fitLightbox = () => { if (lbBlock) fitImage(lbImg, lbStage.clientWidth, lbStage.clientHeight); };
   lbImg.addEventListener("load", fitLightbox);
   window.addEventListener("resize", fitLightbox);
+  // The caption row takes the room it needs and the picture's area gets what's left. Whenever that area changes
+  // (a long caption wraps onto more lines, typing a caption), the picture re-shrinks so it never covers the caption.
+  if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(fitLightbox)).observe(lbStage);
 
   function openLightbox(block) {
     lbBlock = block;
