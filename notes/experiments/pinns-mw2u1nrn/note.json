@@ -23,6 +23,7 @@
         "y": 0.0774,
         "w": 0.83,
         "h": 0.2276,
+        "size": 0.7,
         "file": "body.html"
       },
       {
@@ -39,6 +40,7 @@
         "y": 0.7248,
         "w": 0.37,
         "h": 0.2037,
+        "size": 0.73,
         "file": "text-soz738.html"
       },
       {
@@ -50,7 +52,7 @@
         "src": "images/screenshot-2026-11-04-at-8-01-46-pm.png",
         "rotate": -30.0,
         "ratio": 2.05629,
-        "caption": "Obsidian-Connected note interface, used to help me think"
+        "caption": "Obsidian-Connected note interface I whipped up where I just write my notes, my socratic deducations, etc etc"
       },
       {
         "kind": "image",
@@ -76,8 +78,8 @@
     "aspect": 0.907
   },
   "textFiles": [
-    "body.html",
     "text-soz738.html",
-    "text-67f06s.html"
+    "text-67f06s.html",
+    "body.html"
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "id": "companies-should-probably-opensource-everything-mw4m9z6d",
+  "title": "Companies should probably opensource everything",
+  "created": "2026-11-06",
+  "added": "2026-11-06T01:52",
+  "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.0563
+      },
+      {
+        "kind": "text",
+        "x": 0.255,
+        "y": 0.0856,
+        "w": 0.515,
+        "h": 0.855,
+        "size": 0.44,
+        "file": "body.html"
+      }
+    ],
+    "aspect": 0.7494
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}
