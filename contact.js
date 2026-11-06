@@ -97,10 +97,10 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) throw new Error(data.message || res.status);
       form.reset();
-      say("Sent. Thanks, I'll get back to you.", true);
+      say("Sent! Too late for takebacks.", true);
       setTimeout(close, 1800);
     } catch (err) {
-      say("Couldn't send it just now. Please try again in a minute.");
+      say("Send failed, for some reason idk");
     } finally {
       send.disabled = false; send.textContent = "Send";
     }

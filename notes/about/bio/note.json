@@ -6,33 +6,149 @@
   "layout": {
     "blocks": [
       {
-        "kind": "title",
-        "x": 0.0,
-        "y": 0.0,
-        "w": 1.0,
-        "h": 0.1327
+        "kind": "image",
+        "x": 0.015,
+        "y": 0.0956,
+        "w": 0.9698,
+        "h": 0.5848,
+        "src": "images/images-4.jpg",
+        "ratio": 1.77112,
+        "caption": "optimistic nihlism"
       },
       {
         "kind": "text",
-        "x": 0.02,
-        "y": 0.1736,
-        "w": 0.6,
-        "h": 0.615,
+        "x": 0.11,
+        "y": 0.0346,
+        "w": 0.525,
+        "h": 0.2426,
+        "size": 0.89,
         "file": "body.html"
       },
       {
         "kind": "image",
-        "x": 0.65,
-        "y": 0.1736,
-        "w": 0.3015,
-        "h": 0.7593,
+        "x": 0.595,
+        "y": 0.0433,
+        "w": 0.2279,
+        "h": 0.2435,
         "src": "images/selfieshot.png",
-        "ratio": 1.0
+        "rotate": -30.0,
+        "ratio": 1.0,
+        "caption": "my dad said the asymmetrical light looked weird for linkedin - is is true?"
+      },
+      {
+        "kind": "image",
+        "x": 0.785,
+        "y": 0.1402,
+        "w": 0.1761,
+        "h": 0.2661,
+        "src": "images/ba7116a0-2fae-47c8-865c-c3c61b4b7cdd-a00c4b38-ae66.jpg",
+        "rotate": 15.0,
+        "ratio": 0.7069,
+        "caption": "man i looked like a stiff"
+      },
+      {
+        "kind": "image",
+        "x": 0.74,
+        "y": 0.2805,
+        "w": 0.1611,
+        "h": 0.2294,
+        "src": "images/img-6625.jpg",
+        "rotate": 45.0,
+        "ratio": 0.75,
+        "caption": "NYC Halloween 2026(no one tells you it's boring asf)"
+      },
+      {
+        "kind": "text",
+        "x": 0.08,
+        "y": 0.3032,
+        "w": 0.5,
+        "h": 0.1126,
+        "size": 0.48,
+        "file": "text-pfol82.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.06,
+        "y": 0.4529,
+        "w": 0.1472,
+        "h": 0.28,
+        "src": "images/eragon.jpg",
+        "rotate": -30.0,
+        "ratio": 0.56157
+      },
+      {
+        "kind": "image",
+        "x": 0.17,
+        "y": 0.4328,
+        "w": 0.1929,
+        "h": 0.279,
+        "src": "images/drstoneposter.jpg",
+        "ratio": 0.73846
+      },
+      {
+        "kind": "image",
+        "x": 0.5,
+        "y": 0.6545,
+        "w": 0.199,
+        "h": 0.2834,
+        "src": "images/indianfantasyvishnu.jpg",
+        "rotate": -30.0,
+        "ratio": 0.75
+      },
+      {
+        "kind": "image",
+        "x": 0.725,
+        "y": 0.7363,
+        "w": 0.2682,
+        "h": 0.1607,
+        "src": "images/coolspacedrawing.jpg",
+        "rotate": -45.0,
+        "ratio": 1.78209
+      },
+      {
+        "kind": "image",
+        "x": 0.655,
+        "y": 0.6486,
+        "w": 0.1723,
+        "h": 0.2761,
+        "src": "images/asurasfantasy.jpg",
+        "rotate": 15.0,
+        "ratio": 0.66667
+      },
+      {
+        "kind": "text",
+        "x": 0.545,
+        "y": 0.6359,
+        "w": 0.42,
+        "h": 0.0796,
+        "size": 0.54,
+        "file": "text-leflqh.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.24,
+        "y": 0.5133,
+        "w": 0.3,
+        "h": 0.1797,
+        "src": "images/rickandmortypeaceful.jpg",
+        "rotate": -45.0,
+        "ratio": 1.78261
       }
     ],
-    "aspect": 0.3971
+    "hidden": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.0563
+      }
+    ],
+    "aspect": 0.9363
   },
   "textFiles": [
-    "body.html"
+    "text-pfol82.html",
+    "body.html",
+    "text-leflqh.html"
   ]
 }

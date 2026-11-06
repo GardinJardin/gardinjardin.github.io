@@ -1,0 +1,40 @@
+{
+  "id": "page",
+  "layout": {
+    "blocks": [
+      {
+        "kind": "list",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 0.64,
+        "h": 1.0
+      },
+      {
+        "kind": "line",
+        "x": 0.655,
+        "y": 0.0,
+        "w": 0.01,
+        "h": 1.0
+      },
+      {
+        "kind": "pins",
+        "x": 0.67,
+        "y": 0.315,
+        "w": 0.33,
+        "h": 0.685
+      },
+      {
+        "kind": "text",
+        "x": 0.675,
+        "y": 0.01,
+        "w": 0.325,
+        "h": 0.275,
+        "size": 0.89,
+        "file": "text-xzlkbw.html"
+      }
+    ]
+  },
+  "textFiles": [
+    "text-xzlkbw.html"
+  ]
+}

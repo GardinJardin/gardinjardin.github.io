@@ -12,22 +12,53 @@
         "x": 0.0,
         "y": 0.0,
         "w": 1.0,
-        "h": 0.138
+        "h": 0.1288
       },
       {
         "kind": "text",
-        "x": 0.085,
-        "y": 0.2481,
+        "x": 0.07,
+        "y": 0.555,
         "w": 0.33,
-        "h": 0.3113,
+        "h": 0.2905,
+        "size": 0.58,
         "file": "body.html"
       },
       {
         "kind": "image",
+        "x": 0.495,
+        "y": 0.21,
+        "w": 0.4747,
+        "h": 0.1761,
+        "src": "images/screenshot-2026-11-04-at-6-47-52-pm.png",
+        "rotate": 15.0,
+        "ratio": 3.63467
+      },
+      {
+        "kind": "text",
+        "x": 0.01,
+        "y": 0.1913,
+        "w": 0.545,
+        "h": 0.224,
+        "size": 0.86,
+        "file": "text-aljc17.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.44,
+        "y": 0.34,
+        "w": 0.4691,
+        "h": 0.2089,
+        "src": "images/screenshot-2026-11-05-at-5-11-41-pm.png",
+        "rotate": -15.0,
+        "ratio": 3.02787,
+        "caption": "Professor [CONFIDENTIAL] responding to outreach question: emailing does work!(occasionally)"
+      },
+      {
+        "kind": "image",
         "x": 0.53,
-        "y": 0.7559,
+        "y": 0.75,
         "w": 0.39,
-        "h": 0.2441,
+        "h": 0.2278,
         "src": "images/screenshot-2026-11-04-at-6-47-20-pm.png",
         "ratio": 2.308,
         "caption": "This is the website I created"
@@ -35,46 +66,28 @@
       {
         "kind": "image",
         "x": 0.69,
-        "y": 0.6335,
+        "y": 0.64,
         "w": 0.27,
-        "h": 0.1186,
+        "h": 0.1107,
         "src": "images/screenshot-2026-11-04-at-6-47-28-pm.png",
         "rotate": 15.0,
         "ratio": 3.28814
       },
       {
-        "kind": "image",
-        "x": 0.52,
-        "y": 0.4205,
-        "w": 0.4747,
-        "h": 0.1887,
-        "src": "images/screenshot-2026-11-04-at-6-47-52-pm.png",
-        "rotate": -30.0,
-        "ratio": 3.63467
-      },
-      {
-        "kind": "text",
-        "x": 0.02,
-        "y": 0.6707,
-        "w": 0.615,
-        "h": 0.28,
-        "file": "text-aljc17.html"
-      },
-      {
-        "kind": "image",
-        "x": 0.46,
-        "y": 0.2662,
-        "w": 0.3927,
-        "h": 0.1874,
-        "src": "images/screenshot-2026-11-05-at-5-11-41-pm.png",
-        "rotate": 15.0,
-        "ratio": 3.02787
+        "kind": "link",
+        "x": 0.12,
+        "y": 0.72,
+        "w": 0.255,
+        "h": 0.175,
+        "display": "Or, just read the substack article on my account!",
+        "url": "https://08aaryanjain.substack.com/p/wait-we-could-add-200-data-centers?r=31t472&utm_campaign=post-expanded-share&utm_medium=post%20viewer",
+        "size": 0.44
       }
     ],
-    "aspect": 0.6922
+    "aspect": 0.7418
   },
   "textFiles": [
-    "body.html",
-    "text-aljc17.html"
+    "text-aljc17.html",
+    "body.html"
   ]
 }

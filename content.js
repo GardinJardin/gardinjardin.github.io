@@ -457,6 +457,67 @@
 
   let canvasObserver = null;
   // Draw the open note. On phones the blocks simply stack in reading order instead (CSS does that).
+  // The tiny black box on a link box's left side. Click it: the same popup as clicking a note (title box on top,
+  // body box below, over a dimmed page), but white with purple words. It shows the link's name and address.
+  // Visitors read them (the address is clickable); on your computer (owner) they're fields that save as you
+  // type, and closing the popup redraws the note with the new name/address.
+  // The arrange popup doesn't edit links: this is the one place their words and address change.
+  function linkInfo(b) {
+    const tab = document.createElement("button");
+    tab.type = "button"; tab.className = "link-info-tab";
+    tab.setAttribute("aria-label", "Show this link's name and address"); tab.title = "Name and address";
+    tab.addEventListener("click", (e) => { e.stopPropagation(); e.preventDefault(); openLinkInfo(b); });
+    return tab;
+  }
+  function openLinkInfo(b) {
+    const title = document.createElement("h2");
+    title.className = "text-box note-title link-look";
+    const heading = document.createElement("span");
+    heading.textContent = b.display || "Link";
+    title.append(heading);
+    const body = document.createElement("article");
+    body.className = "text-box note-body link-look";
+    const rows = document.createElement("div");
+    rows.className = "note-content link-info-rows";
+    const row = (name, key) => {
+      const r = document.createElement("label");
+      r.className = "link-info-row";
+      const n = document.createElement("span");
+      n.className = "link-info-name"; n.textContent = name;
+      let value;
+      if (isOwner) {
+        value = document.createElement("input");
+        value.type = "text"; value.value = b[key] || ""; value.spellcheck = false;
+        value.placeholder = key === "url" ? "https://..." : "the words shown";
+        value.addEventListener("input", () => {
+          b[key] = value.value.trim();
+          if (key === "display") heading.textContent = b.display || "Link";
+          saveOpenSoon();
+        });
+      } else if (key === "url" && safeUrl(b.url || "")) {
+        value = document.createElement("a");
+        value.className = "link-info-value";
+        value.href = safeUrl(b.url); value.target = "_blank"; value.rel = "noopener noreferrer";
+        value.textContent = value.href;
+      } else {
+        value = document.createElement("span");
+        value.className = "link-info-value";
+        value.textContent = b[key] || "";
+      }
+      r.append(n, value);
+      return r;
+    };
+    rows.append(row("Name", "display"), row("Link", "url"));
+    const close = document.createElement("button");
+    close.type = "button"; close.className = "note-fullscreen";
+    close.innerHTML = COLLAPSE_SVG; close.setAttribute("aria-label", "Close"); close.title = "Close";
+    close.addEventListener("click", closeReader);
+    body.append(rows, close);
+    readerBox.replaceChildren(title, body);
+    reader.classList.add("open");
+    (isOwner ? rows.querySelector("input") : close).focus();
+  }
+
   function drawNote() {
     const { section, meta } = open;
     const isBio = section === "about", isPage = !!open.isPage;
@@ -473,7 +534,7 @@
     layout.blocks.forEach((b, i) => {
       const block = document.createElement("div");
       block.className = `note-block note-block-${b.kind}`;
-      block.style.cssText = `--x:${b.x};--y:${b.y};--w:${b.w};--h:${b.h};z-index:${i + 1}`;
+      block.style.cssText = `--x:${b.x};--y:${b.y};--w:${b.w};--h:${b.h};--size:${b.size || 1};--rotate:${b.kind === "image" ? 0 : b.rotate || 0}deg;z-index:${i + 1}`;   // --size: this box's letter size (arrange popup slider)
       if (b.kind === "title") {
         const title = document.createElement("h2");
         title.className = "text-box note-title";
@@ -512,6 +573,24 @@
         pins.className = "page-pins";
         pins.append(...sectionNotes(section).filter((n) => n.pinned).map(pinnedBox));
         block.append(pins);
+      } else if (b.kind === "link") {   // a link box: a text box with white fill and purple words; click opens the address
+        // Not an <a>: the black square is a button that sits INSIDE the words as their first "letter" (top left),
+        // and a button can't live inside a link. So the box opens its address itself when clicked.
+        const href = safeUrl(b.url || "");
+        const link = document.createElement("div");
+        link.className = "text-box note-link" + (href ? " has-link" : "");
+        if (href) {
+          link.setAttribute("role", "link"); link.tabIndex = 0; link.title = href;
+          const go = () => window.open(href, "_blank", "noopener,noreferrer");
+          link.addEventListener("click", (e) => { if (!e.target.closest(".link-info-tab")) go(); });
+          link.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target === link) go(); });
+        }
+        const words = document.createElement("div");
+        words.className = "note-link-words";   // exact size from the slider, like a text box (not shrunk to fit)
+        words.append(linkInfo(b), document.createTextNode(b.display || (href ? href.replace(/^https?:\/\//, "") : "Link (no address yet)")));
+        link.append(words);
+        if (!href && !isOwner) block.hidden = true;   // visitors never see a link that goes nowhere
+        block.append(link);
       } else if (b.kind === "line") {   // the white line: runs along the long side of its box
         const line = document.createElement("div");
         line.className = "page-line";
@@ -579,7 +658,7 @@
   // Each title / text box: start at full size; if the words don't fit, shrink them (down to 35%) until they do.
   // Only if even 35% is too big does the text box scroll. Re-done when the window or the frame changes size.
   function fitText(el) {
-    const box = el.classList.contains("note-content") ? el : el.closest(".note-title");
+    const box = el.classList.contains("note-content") ? el : el.closest(".note-title, .note-link");
     if (!box || isPhone()) { el.style.fontSize = ""; return; }
     el.style.fontSize = "";
     const fits = () => box.scrollHeight <= box.clientHeight + 1 && box.scrollWidth <= box.clientWidth + 1;
@@ -945,6 +1024,7 @@
           <div class="np-field ar-hidden-field"><label>Out of the frame (kept, saved)</label><div class="ar-hidden"></div></div>
           <label class="np-btn np-btn-secondary ar-add">+ Image<input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden></label>
           <button type="button" class="np-btn np-btn-secondary ar-add-text">+ Text box</button>
+          <button type="button" class="np-btn np-btn-secondary ar-add-link">+ Link box</button>
           <button type="button" class="np-btn np-btn-secondary ar-reset">Reset to default</button>
         </div>
       </div>
@@ -959,6 +1039,10 @@
   const arHidden = arranger.querySelector(".ar-hidden"), arHiddenField = arranger.querySelector(".ar-hidden-field");
   let work = [], parked = [], selected = -1, screenAspect = 0.6, aspect = 0.6, newTexts = {};
   const SNAP = 0.005;
+  // Letter size of one text box or the title, vs the default look (1 = today's size). Straight-line slider:
+  // size = SIZE_MIN + fraction of the bar × (SIZE_MAX - SIZE_MIN), so 1 sits 90% of the way along.
+  // dev-server.py check_block() clamps to the same range: change both together.
+  const SIZE_MIN = 0.3, SIZE_MAX = 1.08, SIZE_STEP = 0.01, NEW_TEXT_SIZE = 0.6;   // new text boxes start small
   const snap = (v) => Math.round(v / SNAP) * SNAP;
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   const labelOf = (b) => {
@@ -966,6 +1050,7 @@
     if (b.kind === "list") return "Notes list";
     if (b.kind === "pins") return "Pinned notes";
     if (b.kind === "line") return "White line";
+    if (b.kind === "link") return `Link: ${b.display || b.url || "new"}`;
     if (b.kind === "text") return b.file === "body.html" ? "Text (main)" : "Text box";
     return `Image: ${(b.file ? b.file.name : b.src.replace("images/", ""))}`;
   };
@@ -1027,15 +1112,33 @@
     });
   }
 
+  // The size slider in a text/title shape: 3/4 of the shape's width, centered. Changes only the letters, never the box.
+  function sizeSlider(b) {
+    const wrap = document.createElement("div");
+    wrap.className = "ar-size";
+    const range = document.createElement("input");
+    range.type = "range"; range.min = SIZE_MIN; range.max = SIZE_MAX; range.step = SIZE_STEP;
+    range.value = b.size || 1; range.title = "Letter size (only the words, not the box)";
+    const readout = document.createElement("span");
+    readout.className = "ar-size-value";
+    const show = () => { readout.textContent = `${(b.size || 1).toFixed(2)}×`; };
+    range.addEventListener("input", () => { b.size = Number(range.value); show(); });
+    wrap.addEventListener("pointerdown", (e) => e.stopPropagation());   // sliding never drags the shape
+    show();
+    wrap.append(range, readout);
+    return wrap;
+  }
+
   function drawShapes() {
     arFrame.replaceChildren(arFold, ...work.map((b, i) => {
       const s = document.createElement("div");
-      s.className = `ar-shape ar-${b.kind}` + (i === selected ? " selected" : "");
+      s.className = `ar-shape ar-${b.kind === "link" ? "text" : b.kind}` + (i === selected ? " selected" : "");
       s.style.zIndex = i + 1;
-      if (b.kind === "image") s.style.transform = `rotate(${b.rotate || 0}deg)`;   // the box turns with the picture
-      if (b.kind === "image") {   // the box itself stands for the picture; its turn shows as text + a round handle
+      const turns = b.kind === "image" || b.kind === "text" || b.kind === "link";   // parts that can be rotated
+      if (turns) s.style.transform = `rotate(${b.rotate || 0}deg)`;   // the shape turns with the part
+      if (turns) {   // its turn shows as text + a round handle at the top
         const angle = document.createElement("span");
-        angle.className = "ar-angle"; angle.textContent = `↻ ${Math.round(b.rotate || 0)}°`;
+        angle.className = b.kind === "image" ? "ar-angle" : "ar-angle ar-angle-corner"; angle.textContent = `↻ ${Math.round(b.rotate || 0)}°`;
         const turn = document.createElement("span");
         turn.className = "ar-rotate"; turn.title = "Drag to rotate (snaps to 15°; hold Shift for any angle)";
         turn.addEventListener("pointerdown", (e) => startRotate(e, i, s, angle));
@@ -1051,6 +1154,7 @@
       bin.addEventListener("pointerdown", (e) => e.stopPropagation());
       bin.addEventListener("click", (e) => { e.stopPropagation(); parkShape(i); });
       s.append(label, handle, bin);
+      if (b.kind === "text" || b.kind === "title" || b.kind === "link") s.append(sizeSlider(b));   // letter size, centered in the shape
       s.addEventListener("pointerdown", (e) => startDrag(e, i, e.target === handle));
       return s;
     }));
@@ -1070,7 +1174,7 @@
       };
       const move = (d) => () => { const j = i + d; [work[i], work[j]] = [work[j], work[i]]; selected = j; drawShapes(); };
       row.append(name, btn("▲", "Earlier", move(-1), i === 0), btn("▼", "Later", move(1), i === work.length - 1));
-      if (b.kind === "image") row.append(btn("↻", "Rotate 90°", () => { b.rotate = (((b.rotate || 0) + 90 + 180) % 360) - 180; drawShapes(); }));
+      if (b.kind === "image" || b.kind === "text" || b.kind === "link") row.append(btn("↻", "Rotate 90°", () => { b.rotate = (((b.rotate || 0) + 90 + 180) % 360) - 180; drawShapes(); }));
       // × (like the trash can on the shape) takes the part out of the frame into the side list
       row.append(btn("×", "Take out of the frame (kept in the side list)", () => parkShape(i)));
       return row;
@@ -1205,11 +1309,17 @@
     drawShapes();
     measurePictures();   // then each new picture's box takes the picture's proportions
   });
+  arranger.querySelector(".ar-add-link").addEventListener("click", () => {
+    const h = Math.min(0.12, 0.12 * screenAspect / aspect);
+    work.push({ kind: "link", display: "", url: "", x: 0.05, y: clamp(1 - h - 0.02, 0, 1 - h), w: 0.35, h });
+    selected = work.length - 1;
+    drawShapes();
+  });
   arranger.querySelector(".ar-add-text").addEventListener("click", () => {
     const file = newTextFile();
     newTexts[file] = "";
     const h = Math.min(0.25, 0.25 * screenAspect / aspect);
-    work.push({ kind: "text", file, x: 0.05, y: clamp(1 - h - 0.02, 0, 1 - h), w: 0.5, h });
+    work.push({ kind: "text", file, x: 0.05, y: clamp(1 - h - 0.02, 0, 1 - h), w: 0.5, h, size: NEW_TEXT_SIZE });
     selected = work.length - 1;
     drawShapes();
   });
@@ -1249,6 +1359,9 @@
         if (b.ratio) box.ratio = Math.round(b.ratio * 100000) / 100000;
       }
       if (b.kind === "text") box.file = b.file;
+      if ((b.kind === "text" || b.kind === "link") && b.rotate) box.rotate = b.rotate;
+      if (b.kind === "link") { box.display = (b.display || "").trim(); box.url = (b.url || "").trim(); }
+      if ((b.kind === "text" || b.kind === "title" || b.kind === "link") && b.size && Math.abs(b.size - 1) > 0.005) box.size = Math.round(b.size * 100) / 100;
       return box;
     };
     const blocks = work.map(toBox);
@@ -1268,10 +1381,15 @@
   // Left out on purpose: the Obsidian parts (folder search, "Mark as link", "Fill tags").
   // The tracker's folder picker becomes "which of the four boxes"; its two tag rows become one.
   // Pictures picked here are uploaded into the new note's folder and placed in a column on the right.
+  // same rule as the tracker: tags are lowercase, spaces become dashes ("Voltage Divider" -> "voltage-divider"); used by the note's tag row
+  const normalizeTag = (raw) => (raw || "").trim().toLowerCase().replace(/\s+/g, "-");
+
   const adder = document.createElement("div");
   adder.className = "np-overlay";
+  // Stripped down (2026-11-05): the plus button only names the note and picks its box. The body, pictures,
+  // text boxes, links and tags are all added from inside the note (full-screen editor, arrange popup, tag row).
   adder.innerHTML = `
-    <div class="np-modal" role="dialog" aria-labelledby="npTitle">
+    <div class="np-modal np-adder" role="dialog" aria-labelledby="npTitle">
       <div class="np-header">
         <div class="np-header-title">
           <h2 id="npTitle">New Note</h2>
@@ -1284,85 +1402,16 @@
           <label for="npTitleInput">Title</label>
           <input type="text" id="npTitleInput" placeholder="Note title" autocomplete="off">
         </div>
-        <div class="np-field np-body-field">
-          <label for="npBody">Body</label>
-          <div id="npBody" class="np-editor" contenteditable="true" data-placeholder="Write the note..."></div>
-        </div>
-        <div class="np-field np-tags">
-          <label>Tags (optional)</label>
-          <div class="np-tag-row">
-            <span class="np-tag-label">Tags/</span>
-            <div class="np-tag-field">
-              <input type="text" id="npTagInput" placeholder="Type and press Enter" autocomplete="off">
-              <div class="np-chips" id="npChips"></div>
-            </div>
-          </div>
-        </div>
-        <div class="np-field np-images">
-          <label>Images (optional)</label>
-          <div class="np-tag-row">
-            <label class="np-btn np-btn-secondary np-pick">Choose images<input type="file" id="npImages" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden></label>
-            <div class="np-thumbs" id="npThumbs"></div>
-          </div>
-        </div>
         <div class="np-error" id="npError">Please fill in a title.</div>
       </div>
       <div class="np-footer">
         <button type="button" class="np-btn np-btn-secondary" id="npCancel">Cancel</button>
-        <button type="button" class="np-btn np-btn-primary" id="npSave">Save</button>
+        <button type="button" class="np-btn np-btn-primary" id="npSave">Create</button>
       </div>
     </div>`;
   if (isOwner) document.body.appendChild(adder);
   const $ = (id) => adder.querySelector("#" + id);
-  const sectionPick = $("npSection"), titleInput = $("npTitleInput"), bodyEditor = $("npBody");
-  const tagInput = $("npTagInput"), chipBox = $("npChips"), errorLine = $("npError");
-  const imagePick = $("npImages"), thumbs = $("npThumbs");
-  let tags = [], newImages = [];
-
-  // same rule as the tracker: tags are lowercase, spaces become dashes ("Voltage Divider" -> "voltage-divider")
-  const normalizeTag = (raw) => (raw || "").trim().toLowerCase().replace(/\s+/g, "-");
-
-  function renderChips() {
-    chipBox.replaceChildren(...tags.map((tag, i) => {
-      const chip = document.createElement("span");
-      chip.className = "np-chip";
-      const text = document.createElement("span");
-      text.textContent = tag;
-      const remove = document.createElement("button");
-      remove.type = "button"; remove.textContent = "×"; remove.setAttribute("aria-label", "Remove tag");
-      remove.addEventListener("click", () => { tags.splice(i, 1); renderChips(); });
-      chip.append(text, remove);
-      return chip;
-    }));
-  }
-  tagInput.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-    const tag = normalizeTag(tagInput.value);
-    if (tag && !tags.includes(tag)) { tags.push(tag); renderChips(); }
-    tagInput.value = "";
-  });
-
-  function renderThumbs() {
-    thumbs.replaceChildren(...newImages.map((im, i) => {
-      const t = document.createElement("span");
-      t.className = "np-thumb"; t.style.backgroundImage = `url("${im.preview}")`; t.title = im.file.name;
-      const x = document.createElement("button");
-      x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remove image");
-      x.addEventListener("click", () => { URL.revokeObjectURL(im.preview); newImages.splice(i, 1); renderThumbs(); });
-      t.append(x);
-      return t;
-    }));
-  }
-  imagePick.addEventListener("change", () => {
-    for (const file of imagePick.files) newImages.push({ file, preview: URL.createObjectURL(file) });
-    imagePick.value = "";
-    renderThumbs();
-  });
-
-  // Pasting into the Body keeps the formatting (links, headings, lists...), cleaned by cleanHtml.
-  // There's no formatting toolbar on purpose: write in Substack (or anywhere), copy, paste here.
-  keepFormattingOnPaste(bodyEditor);
+  const sectionPick = $("npSection"), titleInput = $("npTitleInput"), errorLine = $("npError");
 
   const closeAdder = () => adder.classList.remove("open");
   $("npCancel").addEventListener("click", closeAdder);
@@ -1371,8 +1420,7 @@
 
   const plus = document.querySelector(".menu-plus");
   if (isOwner && plus) plus.addEventListener("click", () => {
-    titleInput.value = ""; bodyEditor.textContent = ""; tags = []; renderChips(); tagInput.value = "";
-    newImages.forEach((im) => URL.revokeObjectURL(im.preview)); newImages = []; renderThumbs();
+    titleInput.value = "";
     errorLine.classList.remove("show");
     if (currentSection) sectionPick.value = currentSection;   // default to the box you're looking at
     adder.classList.add("open");
@@ -1380,29 +1428,21 @@
   });
 
   let adding = false;
-  $("npSave").addEventListener("click", async () => {
+  async function createNote() {
     if (adding) return;
     const section = sectionPick.value, title = titleInput.value.trim();
     if (!title) { errorLine.classList.add("show"); titleInput.focus(); return; }
     adding = true;
     try {
-      const meta = { id: `${slug(title)}-${Date.now().toString(36)}`, title, created: today(), added: nowStamp(), tags: [...tags] };
-      const texts = { "body.html": cleanHtml(bodyEditor.innerHTML) };
-      if (!(await saveNote(section, meta, texts))) return;   // makes the note's folder
-      if (newImages.length) {
-        const srcs = [];
-        for (const im of newImages) {
-          const src = await uploadImage(section, meta.id, im.file);
-          if (src) srcs.push(src);
-        }
-        meta.layout = defaultLayout(srcs);
-        await saveNote(section, meta, texts);
-      }
-      newImages.forEach((im) => URL.revokeObjectURL(im.preview)); newImages = [];
+      const meta = { id: `${slug(title)}-${Date.now().toString(36)}`, title, created: today(), added: nowStamp(), tags: [] };
+      if (!(await saveNote(section, meta, { "body.html": "" }))) return;   // makes the note's folder, empty
       closeAdder();
-      showSection(section);   // jump to where it went
+      await showSection(section);   // jump to its box...
+      showNote(section, meta.id);   // ...and open the new note, ready to fill in
     } finally { adding = false; }
-  });
+  }
+  $("npSave").addEventListener("click", createNote);
+  titleInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); createNote(); } });
 
   // ---------- owner: delete a note (trash), with the tracker's "are you sure" popup ----------
   const confirmBox = document.createElement("div");

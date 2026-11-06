@@ -7,7 +7,7 @@
 //  4. when all of a part's squares are on, the stencil comes off and the part is back to normal.
 (() => {
   const PARTS = ".icon-ribbon .social-link, #home-title, .section-tab, .divider-horizontal, " +
-    ".note-view:not([hidden]) .note-block:not([hidden]), .page-view .note-block:not([hidden]), .note-edit-bar, .note-tags, .menu";
+    ".note-view:not([hidden]) .note-block:not([hidden]), .page-view .note-block:not([hidden]), .note-edit-bar, .note-tags, .menu, .menu-hint";
   const HIDDEN = "polygon(0 0, 0 0, 0 0)";   // a stencil with no area: nothing shows
 
   const visible = (el) => el.getClientRects().length > 0;

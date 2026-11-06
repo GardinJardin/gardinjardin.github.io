@@ -127,8 +127,8 @@ def rebuild_index():
     return index
 
 
-NOTE_KINDS = ("title", "text", "image")
-PAGE_KINDS = ("list", "pins", "line", "text", "image")  # a box's page: notes list, pinned list, the white line, extras
+NOTE_KINDS = ("title", "text", "image", "link")
+PAGE_KINDS = ("list", "pins", "line", "text", "image", "link")  # a box's page: notes list, pinned list, the white line, extras
 
 
 # ---------- checks ----------
@@ -176,6 +176,21 @@ def check_block(b, page):
         cap = b.get("caption")
         if cap is not None and str(cap).strip():
             entry["caption"] = str(cap).strip()
+    if kind in ("text", "link"):  # text and link boxes can be turned, like pictures
+        rot = _num(b.get("rotate"), 0) % 360
+        if rot > 180:
+            rot -= 360
+        if rot:
+            entry["rotate"] = round(rot, 1)
+    if kind == "link":  # a link box: the words shown + where a click goes
+        entry["display"] = str(b.get("display") or "").strip()[:120]
+        url = str(b.get("url") or "").strip()[:2000]
+        # only web and email addresses: a "javascript:" address would run code on click (same rule as safeUrl in content.js)
+        entry["url"] = url if re.match(r"(?i)(https?:|mailto:)", url) else ""
+    if kind in ("text", "title", "link"):
+        size = min(1.08, max(0.3, _num(b.get("size"), 1)))  # letter size vs the default (1); same range as SIZE_MIN/MAX in content.js
+        if abs(size - 1) > 0.005:
+            entry["size"] = round(size, 2)  # 1 = the default look, so it isn't stored
     if kind == "text":
         f = b.get("file", "body.html")
         if not (isinstance(f, str) and TEXT_RE.fullmatch(f)):

@@ -69,6 +69,10 @@
     --more-dots-text: var(--text-box-text);  /* the "..." at the end of a text box that holds more than it shows */
     --more-dots-inset: 22px;                 /* how far the "..." sits from the box's right edge */
     --text-box-link: #e8d92e;                /* links inside the boxes */
+    --link-box-text: #7b2cff;                /* link boxes (a part of a note, like a picture): purple words... */
+    --link-box-background: #ffffff;          /* ...on a stark white box */
+    --link-box-shadow: rgba(0, 0, 0, 0.35);  /* soft shadow under a link box */
+    --link-info-background: #000000;         /* the tiny black box on a link box's left side (opens its popup) */
     --note-time-text: #c77dff;               /* "Nov 4, 2:47 PM" beside each note box: neon violet, like the social icons */
     --note-time-glow: rgba(176, 38, 255, 0.85); /* its glow */
     --note-time-background: rgba(60, 60, 66, 0.55); /* soft gray patch behind it so it reads on any background */
@@ -286,6 +290,25 @@
   /* opens on hover (mouse); a tap also opens it on phones, which have no hover */
   .menu:hover .menu-extra, .menu.open .menu-extra { opacity: 1; transform: none; pointer-events: auto; }
   .menu:hover .menu-extra:nth-of-type(3), .menu.open .menu-extra:nth-of-type(3) { transition-delay: 0.05s; }   /* the farther one arrives a beat later */
+  /* The sign: a small neon tag in the right-hand margin, just above the list button, with a tip pointing down at it.
+     It bobs gently, and fades away while the menu is open (its job is done). */
+  .menu-hint {
+    position: fixed; right: 16px; bottom: 92px; z-index: 3; max-width: 130px; padding: 5px 10px;
+    font: 18px/1.05 "VT323", monospace; text-align: center; color: var(--text-box-text);
+    background: var(--text-box-background); border: 1px solid var(--text-box-outline); border-radius: 8px;
+    box-shadow: 0 0 8px var(--text-box-glow); pointer-events: none;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s;
+    animation: hint-bob 2.4s ease-in-out infinite;
+  }
+  .menu-hint::after {   /* the tip: a small diamond under the tag, over the list button's center */
+    content: ""; position: absolute; right: 25px; bottom: -6px; width: 10px; height: 10px;
+    background: var(--text-box-background); border-right: 1px solid var(--text-box-outline); border-bottom: 1px solid var(--text-box-outline);
+    transform: rotate(45deg);
+  }
+  .portal-arrived .menu-hint { opacity: 0.92; visibility: visible; }
+  .portal-arrived .menu:hover ~ .menu-hint, .portal-arrived .menu.open ~ .menu-hint { opacity: 0; }
+  @keyframes hint-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .menu-hint { animation: none; } }
   .menu-plus { display: none !important; }
   .owner .menu-plus { display: grid !important; }
 
@@ -312,11 +335,11 @@
   /* Text boxes on the page (not opened): one fixed, large letter size. Each letter is about as wide as
      --note-letter-width (VT323 letters are ~0.4 of the font size wide, measured). Long lines wrap and
      the box scrolls; the words are never shrunk to fit. */
-  .note-block .note-content { font-size: calc(var(--note-letter-width) / 0.4); line-height: 1.15; overflow: hidden; }   /* no scrolling in boxes on the page: "..." shows there's more, click to read it all */
+  .note-block .note-content { font-size: calc(var(--note-letter-width) / 0.4 * var(--size, 1)); line-height: 1.15; overflow: hidden; }   /* no scrolling in boxes on the page: "..." shows there's more, click to read it all */
   .note-block .note-body { position: relative; }
   .more-dots {
     display: none; position: absolute; right: var(--more-dots-inset); pointer-events: none;
-    font-size: calc(var(--note-letter-width) / 0.4); line-height: 1.15; color: var(--more-dots-text);
+    font-size: calc(var(--note-letter-width) / 0.4 * var(--size, 1)); line-height: 1.15; color: var(--more-dots-text);
     padding-left: 1.6em; background: linear-gradient(to right, transparent, var(--text-box-background) 1.2em);   /* fades out the words under the dots */
   }
   .has-more .more-dots { display: block; }
@@ -475,6 +498,7 @@
   .np-btn-secondary:hover { background: rgba(232, 240, 255, 0.14); }
   /* Message popup (contact.js): the add-note popup's look, smaller; the message field is a plain text area */
   .contact-modal { width: 620px; height: 560px; }
+  .np-adder { width: 520px; height: auto; }   /* the plus button's popup: title + box only */
   .contact-modal textarea {
     flex: 1; min-height: 120px; width: 100%; resize: none; font-family: inherit; font-size: 15px; padding: 10px 12px; line-height: 1.5;
     border: 1px solid var(--popup-field-border); border-radius: 10px; background: var(--popup-field-background); color: var(--popup-text);
@@ -553,6 +577,42 @@
   }
   .note-block > .note-title, .note-block > .note-body { height: 100%; box-sizing: border-box; margin: 0; }
   .note-block > .note-title { overflow: hidden; }
+  /* Link box: a text box (same shape, padding, neon line and letter size), only the colors change: stark white fill,
+     purple pixel words from the top left; grows a little on hover */
+  .note-link {
+    display: block; text-align: left; box-sizing: border-box;   /* words start top left, like a text box */
+    width: 100%; height: 100%; overflow: hidden;
+    background: var(--link-box-background); color: var(--link-box-text); text-decoration: none;
+    font-family: "VT323", monospace; line-height: 1.15; font-size: calc(var(--note-letter-width) / 0.4 * var(--size, 1));   /* same letter size as a text box; --size = the arrange popup slider, exact (never shrunk) */
+    transition: transform 0.15s ease-out;
+  }
+  /* Turned text and link boxes (arrange popup: drag the round handle, or ↻): the box turns about its center */
+  .note-block-text > .note-body, .note-block-link > .note-link { --turn: rotate(var(--rotate, 0deg)); transform: var(--turn); }
+  .note-link.has-link { cursor: pointer; }
+  .note-link.has-link:hover, .note-link.has-link:focus-visible { transform: var(--turn) scale(1.03); }
+  .note-link-words { overflow-wrap: anywhere; }   /* long names wrap onto more lines, like a text box */
+  .note-link:focus-visible { outline: 2px dashed var(--link-box-text); outline-offset: 3px; }
+  /* The tiny black box: the first letter of a link box's words; opens the link's popup (openLinkInfo in content.js) */
+  .link-info-tab {   /* a "letter": the first one, top left; sizes with the slider, turns with the box */
+    display: inline-block; width: 0.7em; height: 0.7em;   /* fallback for browsers without the cap unit */
+    width: 1cap; height: 1cap;                             /* exactly as tall as a capital letter, and square */
+    margin-right: 0.22em; vertical-align: baseline;         /* sits on the same line the letters sit on */
+    padding: 0; border: 0; border-radius: 0.06em; cursor: pointer;
+    background: var(--link-info-background); transition: transform 0.15s;
+  }
+  .link-info-tab:hover, .link-info-tab:focus-visible { transform: scale(1.25); }
+  /* The link's popup: the note popup's boxes (same neon line), only the colors change: white fill, purple words */
+  .link-look { background: var(--link-box-background); color: var(--link-box-text); }
+  .link-look .note-fullscreen { color: var(--link-box-text); }
+  .link-info-rows { display: flex; flex-direction: column; gap: 10px; }
+  .link-info-row { display: flex; align-items: baseline; gap: 14px; }
+  .link-info-name { flex: none; width: 3.2em; opacity: 0.6; }
+  .link-info-value { overflow-wrap: anywhere; color: var(--link-box-text); -webkit-user-select: text; user-select: text; }
+  a.link-info-value { text-decoration: underline; }
+  .link-info-row input { flex: 1; min-width: 0; font: inherit; padding: 2px 10px; border-radius: 8px;
+                         border: 1px solid var(--link-box-text); background: var(--link-box-background); color: var(--link-box-text); }
+  .link-info-row input:focus { outline: none; box-shadow: 0 0 8px var(--link-box-text); }
+  .note-block > .note-title { font-size: calc(2rem * var(--size, 1)); }   /* the title's largest size (arrange popup slider); it still shrinks to fit */
   /* Pictures: sized by content.js to fit their box even when rotated; the green outline hugs the picture */
   .note-image {
     position: absolute; left: 50%; top: 50%; display: block; box-sizing: border-box; cursor: pointer;
@@ -580,6 +640,8 @@
     .note-frame { display: flex; flex-direction: column; gap: 14px; }
     .note-block { position: static; width: auto; height: auto; }
     .note-block > .note-title, .note-block > .note-body { height: auto; }
+    .note-block-link .note-link { height: auto; min-height: 64px; }   /* link boxes keep a tappable height when parts stack */
+    .note-block-text > .note-body, .note-block-link > .note-link { --turn: none; }   /* stacked on phones: no turning */   /* so the tiny black box stays on the link box's left side */
     .note-block-text .note-body { max-height: 70vh; }
     .note-image { position: static; width: 100% !important; height: auto !important; transform: none !important; }
   }
@@ -622,10 +684,16 @@
     cursor: move; touch-action: none; overflow: hidden; -webkit-user-select: none; user-select: none;
   }
   .ar-shape.ar-title { background-color: var(--arrange-shape-title); }
+  /* Letter-size slider inside a text/title shape: 3/4 of the shape's width, centered both ways */
+  .ar-size { position: absolute; left: 12.5%; width: 75%; top: 50%; transform: translateY(-50%); z-index: 2;
+             display: flex; align-items: center; gap: 6px; cursor: default; }
+  .ar-size input[type="range"] { flex: 1; min-width: 0; accent-color: var(--popup-accent); cursor: pointer; }
+  .ar-size-value { flex: none; font-size: 12px; color: var(--popup-text); background: var(--popup-field-background); padding: 1px 5px; border-radius: 6px; }
   .ar-shape.selected { border-color: var(--popup-accent); box-shadow: 0 0 10px var(--popup-glow); }
   .ar-shape.ar-image { background-color: var(--arrange-shape-image); border-color: var(--image-outline); }   /* a picture: just a box */
   .ar-angle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 13px; color: var(--popup-text);
               background: rgba(0, 0, 0, 0.55); padding: 1px 6px; border-radius: 4px; pointer-events: none; }
+  .ar-angle-corner { left: 6px; top: auto; bottom: 4px; transform: none; }   /* text/link shapes: the slider has the middle */
   .ar-rotate {
     position: absolute; top: 4px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; z-index: 2;
     background: var(--popup-accent); border: 2px solid var(--popup-background); cursor: grab; touch-action: none;
@@ -755,6 +823,8 @@
       <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
     </button>
   </div>
+  <!-- Small sign above the list button pointing visitors to the message button; hides while the menu is open -->
+  <div class="menu-hint" aria-hidden="true">Send me a message from here</div>
   <script>
     // Owner check: on your own computer (localhost) the page gets the "owner" class, which shows the plus button.
     if (["localhost", "127.0.0.1"].includes(location.hostname)) document.body.classList.add("owner");
