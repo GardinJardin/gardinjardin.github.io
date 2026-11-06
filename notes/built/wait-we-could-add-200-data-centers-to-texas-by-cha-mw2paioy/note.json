@@ -31,7 +31,8 @@
         "h": 0.1761,
         "src": "images/screenshot-2026-11-04-at-6-47-52-pm.png",
         "rotate": 15.0,
-        "ratio": 3.63467
+        "ratio": 3.63467,
+        "caption": "Data projects like these mean you invariably make a ton of assumptions, the same assumptions your underlying data makes. For example, ERCOT future demand datasets don't factor in climate change/extreme events, so my model doesn't either"
       },
       {
         "kind": "text",
@@ -71,12 +72,13 @@
         "h": 0.1107,
         "src": "images/screenshot-2026-11-04-at-6-47-28-pm.png",
         "rotate": 15.0,
-        "ratio": 3.28814
+        "ratio": 3.28814,
+        "caption": "America's a gluttonous beast"
       },
       {
         "kind": "link",
-        "x": 0.12,
-        "y": 0.72,
+        "x": 0.135,
+        "y": 0.74,
         "w": 0.255,
         "h": 0.175,
         "display": "Or, just read the substack article on my account!",

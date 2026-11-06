@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  // Phones (finger input + short side under 500 px) go to phone.html, which shows this page inside a 1440x900 "computer screen".
+  // Does nothing on computers. Skipped when this page is already inside that screen (window.top is the wrapper).
+  if (window.top === window.self && matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) < 500)
+    location.replace("phone.html" + location.search + location.hash);
+</script>
 <title>Aaryan Jain</title>
 <!-- VT323: the retro TV on-screen-display font, same as the ERCOT headroom app's headings -->
 <link rel="preconnect" href="https://fonts.googleapis.com">

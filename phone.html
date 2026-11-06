@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aaryan Jain</title>
+<script>
+  // A computer that lands here (e.g. a link copied from a phone) goes back to the normal page. Same phone test as index.html.
+  if (!(matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) < 500))
+    location.replace("./" + location.search + location.hash);
+</script>
+<!-- Phones only (index.html sends them here). The real site runs inside #screen, a fixed 1440x900 window,
+     so every vw/vh, the bubbles and the portal measure a computer-sized screen. The window is then shrunk to fit
+     the phone, and turned 90 degrees while the phone is upright, so people turn the phone to read it straight. -->
+<style>
+  :root {
+    --outside-frame-background: #050f16;   /* the bars around the "computer screen" */
+  }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--outside-frame-background); }
+  #screen {
+    position: fixed; left: 50%; top: 50%;
+    width: 1440px; height: 900px; border: 0; display: block;
+    transform-origin: center center;
+  }
+</style>
+</head>
+<body>
+<iframe id="screen" title="Aaryan Jain"></iframe>
+<script>
+  const FRAME_W = 1440, FRAME_H = 900;   // the computer screen the site is laid out on
+  const screenEl = document.getElementById("screen");
+  screenEl.src = "index.html" + location.search + location.hash;
+
+  // How big the frame is drawn on the phone. W, H = the phone's visible width and height in px.
+  // turned = true when the phone is upright and the frame is drawn sideways.
+  // Returns the shrink factor: 1 = full size, 0.3 = 30% size.
+  function fitScale(W, H, turned) {
+    // Aaryan's rule: the frame's short side (900) fills 90% of the phone's short side, leaving a 5% bar
+    // along each long edge. Works the same upright or sideways, since it only uses the phone's short side.
+    const short = Math.min(W, H), long = Math.max(W, H);
+    const byShortSide = 0.9 * short / FRAME_H;
+    // Safety check: on a squarer screen (under 1.6:1) the long side could spill off, so it also has to fit.
+    const byLongSide = long / FRAME_W;
+    return Math.min(byShortSide, byLongSide);
+  }
+
+  function place() {
+    const W = window.innerWidth, H = window.innerHeight;
+    const turned = H > W;   // phone held upright
+    const s = fitScale(W, H, turned);
+    // Move the frame's center to the screen's center, turn it if upright, then shrink it.
+    screenEl.style.transform =
+      `translate(-50%, -50%) ${turned ? "rotate(90deg) " : ""}scale(${s})`;
+  }
+  place();
+  window.addEventListener("resize", place);
+  window.addEventListener("orientationchange", () => setTimeout(place, 200));   // some phones report the new size late
+</script>
+</body>
+</html>

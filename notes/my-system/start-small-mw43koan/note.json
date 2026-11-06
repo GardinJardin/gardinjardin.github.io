@@ -4,6 +4,38 @@
   "created": "2026-11-05",
   "added": "2026-11-05T17:08",
   "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.1182
+      },
+      {
+        "kind": "text",
+        "x": 0.03,
+        "y": 0.1683,
+        "w": 0.64,
+        "h": 0.6276,
+        "size": 0.82,
+        "file": "body.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.635,
+        "y": 0.355,
+        "w": 0.3426,
+        "h": 0.3961,
+        "src": "images/screenshot-2026-11-05-at-7-58-52-pm.png",
+        "rotate": -30.0,
+        "ratio": 2.425,
+        "caption": "My exercise tracking system. Offloading shit like this to software is a really convenient way to build resilient systems."
+      }
+    ],
+    "aspect": 0.3567
+  },
   "textFiles": [
     "body.html"
   ]
