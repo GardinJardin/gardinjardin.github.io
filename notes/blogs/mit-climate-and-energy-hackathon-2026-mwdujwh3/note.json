@@ -1,0 +1,92 @@
+{
+  "id": "mit-climate-and-energy-hackathon-2026-mwdujwh3",
+  "title": "MIT Climate and Energy Hackathon 2026",
+  "created": "2026-11-12",
+  "added": "2026-11-12T12:53",
+  "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.0618
+      },
+      {
+        "kind": "text",
+        "x": 0.0,
+        "y": 0.0808,
+        "w": 0.595,
+        "h": 0.2139,
+        "size": 0.58,
+        "file": "body.html"
+      },
+      {
+        "kind": "link",
+        "x": 0.05,
+        "y": 0.3018,
+        "w": 0.4,
+        "h": 0.1069,
+        "display": "My cringe linkedin post on the hackathon",
+        "url": "https://lnkd.in/p/eR2f7zfJ",
+        "size": 0.43
+      },
+      {
+        "kind": "image",
+        "x": 0.49,
+        "y": 0.36,
+        "w": 0.1629,
+        "h": 0.2494,
+        "src": "images/img-6823.jpg",
+        "rotate": 30.0,
+        "ratio": 0.75
+      },
+      {
+        "kind": "image",
+        "x": 0.735,
+        "y": 0.09,
+        "w": 0.211,
+        "h": 0.3231,
+        "src": "images/img-6844.jpg",
+        "rotate": 15.0,
+        "ratio": 0.75
+      },
+      {
+        "kind": "image",
+        "x": 0.18,
+        "y": 0.465,
+        "w": 0.2216,
+        "h": 0.3392,
+        "src": "images/img-6869.jpg",
+        "rotate": -30.0,
+        "ratio": 0.75
+      },
+      {
+        "kind": "image",
+        "x": 0.595,
+        "y": 0.115,
+        "w": 0.1748,
+        "h": 0.2676,
+        "src": "images/img-6871.jpg",
+        "rotate": -45.0,
+        "ratio": 0.75
+      }
+    ],
+    "hidden": [
+      {
+        "kind": "link",
+        "x": 0.05,
+        "y": 0.4087,
+        "w": 0.35,
+        "h": 0.057,
+        "display": "",
+        "url": ""
+      }
+    ],
+    "aspect": 0.8709
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}
