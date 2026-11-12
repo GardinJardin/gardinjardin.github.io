@@ -133,6 +133,17 @@
         "src": "images/rickandmortypeaceful.jpg",
         "rotate": -45.0,
         "ratio": 1.78261
+      },
+      {
+        "kind": "image",
+        "x": 0.015,
+        "y": 0.62,
+        "w": 0.3436,
+        "h": 0.0993,
+        "src": "images/screenshot-2026-11-11-at-11-45-51-pm.png",
+        "rotate": 15.0,
+        "ratio": 3.69592,
+        "caption": "what i'd give for a workspace garage like this"
       }
     ],
     "hidden": [
@@ -147,8 +158,8 @@
     "aspect": 0.9363
   },
   "textFiles": [
+    "body.html",
     "text-pfol82.html",
-    "text-leflqh.html",
-    "body.html"
+    "text-leflqh.html"
   ]
 }
