@@ -42,8 +42,7 @@
         "h": 0.2661,
         "src": "images/ba7116a0-2fae-47c8-865c-c3c61b4b7cdd-a00c4b38-ae66.jpg",
         "rotate": 15.0,
-        "ratio": 0.7069,
-        "caption": "man i looked like a stiff"
+        "ratio": 0.7069
       },
       {
         "kind": "image",
@@ -158,8 +157,8 @@
     "aspect": 0.9363
   },
   "textFiles": [
-    "body.html",
     "text-pfol82.html",
+    "body.html",
     "text-leflqh.html"
   ]
 }
