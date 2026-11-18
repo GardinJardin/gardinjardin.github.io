@@ -13,6 +13,13 @@
     ],
     "experiments": [
       {
+        "id": "sun-tracking-solar-panel-mwlqhs4n",
+        "title": "Sun Tracking Solar Panel",
+        "created": "2026-11-18",
+        "added": "2026-11-18T01:22",
+        "tags": []
+      },
+      {
         "id": "pinns-mw2u1nrn",
         "title": "PINNs",
         "created": "2026-11-04",

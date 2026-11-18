@@ -1,0 +1,41 @@
+{
+  "id": "sun-tracking-solar-panel-mwlqhs4n",
+  "title": "Sun Tracking Solar Panel",
+  "created": "2026-11-18",
+  "added": "2026-11-18T01:22",
+  "tags": [],
+  "layout": {
+    "blocks": [
+      {
+        "kind": "title",
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.13
+      },
+      {
+        "kind": "text",
+        "x": 0.05,
+        "y": 0.2,
+        "w": 0.44,
+        "h": 0.735,
+        "size": 0.61,
+        "file": "body.html"
+      },
+      {
+        "kind": "image",
+        "x": 0.555,
+        "y": 0.275,
+        "w": 0.2473,
+        "h": 0.4923,
+        "src": "images/screenshot-2026-11-18-at-1-50-23-am.png",
+        "rotate": -30.0,
+        "ratio": 1.23392,
+        "caption": "What I really need is a robot to vacuum my home....wait, haven't those already been invented?? What the hell, dad."
+      }
+    ]
+  },
+  "textFiles": [
+    "body.html"
+  ]
+}
